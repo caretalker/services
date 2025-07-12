@@ -6,13 +6,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorMessage = document.getElementById('errorMessage');
     const loadingMessage = document.getElementById('loadingMessage');
     const loginButton = document.getElementById('loginButton');
+    const rememberMe = document.getElementById('rememberMe');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    // ページ読み込み時に保存されたログイン情報を復元
+    loadRememberedCredentials();
 
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         // フォームデータを取得
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        
+        // 入力値の検証
+        if (!email || !password) {
+            showError('メールアドレスとパスワードを入力してください');
+            return;
+        }
         
         // UI状態を更新
         showLoading();
@@ -39,6 +51,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 sessionStorage.setItem('userSerial', data.serial);
                 sessionStorage.setItem('userEmail', email);
                 
+                // 「ログインを保持する」がチェックされている場合
+                if (rememberMe.checked) {
+                    localStorage.setItem('rememberedEmail', email);
+                    localStorage.setItem('rememberLogin', 'true');
+                } else {
+                    localStorage.removeItem('rememberedEmail');
+                    localStorage.removeItem('rememberLogin');
+                }
+                
                 // トップページにリダイレクト
                 window.location.href = 'top.html';
             } else {
@@ -47,10 +68,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('ログインエラー:', error);
-            showError('ネットワークエラーが発生しました。もう一度お試しください。');
+            showError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
         } finally {
             hideLoading();
         }
+    });
+    
+    // パスワードを忘れた場合のクリックイベント
+    document.querySelector('.forgot').addEventListener('click', function() {
+        alert('パスワードリセット機能は現在準備中です。管理者にお問い合わせください。');
+    });
+    
+    // 新規登録のクリックイベント
+    document.querySelector('.register').addEventListener('click', function() {
+        alert('新規登録機能は現在準備中です。管理者にお問い合わせください。');
     });
     
     function showLoading() {
@@ -62,25 +93,45 @@ document.addEventListener('DOMContentLoaded', function() {
     function hideLoading() {
         loadingMessage.style.display = 'none';
         loginButton.disabled = false;
-        loginButton.textContent = 'ログイン';
+        loginButton.textContent = '次へ';
     }
     
     function showError(message) {
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
+        // エラー表示時にフォームを少し上にスクロール
+        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
     function hideError() {
         errorMessage.style.display = 'none';
     }
-});
-
-// フォームの入力時にエラーメッセージを隠す
-document.addEventListener('input', function(e) {
-    if (e.target.type === 'email' || e.target.type === 'password') {
-        const errorMessage = document.getElementById('errorMessage');
-        if (errorMessage.style.display === 'block') {
-            errorMessage.style.display = 'none';
+    
+    function loadRememberedCredentials() {
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        const rememberLogin = localStorage.getItem('rememberLogin');
+        
+        if (rememberLogin === 'true' && rememberedEmail) {
+            emailInput.value = rememberedEmail;
+            rememberMe.checked = true;
         }
     }
+    
+    // フォームの入力時にエラーメッセージを隠す
+    [emailInput, passwordInput].forEach(input => {
+        input.addEventListener('input', function() {
+            if (errorMessage.style.display === 'block') {
+                hideError();
+            }
+        });
+    });
+    
+    // Enterキーでログイン
+    [emailInput, passwordInput].forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+    });
 });
