@@ -1,30 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ログイン</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="login-box">
-            <h1>ログイン</h1>
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="email">メールアドレス</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">パスワード</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" id="loginButton">ログイン</button>
-            </form>
-            <div id="errorMessage" class="error-message"></div>
-            <div id="loadingMessage" class="loading-message">ログイン中...</div>
-        </div>
-    </div>
-    <script src="script.js"></script>
+  <div class="container">
+    <h2>ログイン</h2>
+    <p>このアプリにログインするために<br>Eメールとパスワードを入力してください</p>
+    <form id="loginForm">
+      <input type="email" id="email" name="email" placeholder="email@domain.com" required />
+      <input type="password" id="password" name="password" placeholder="your password" required />
+      <div class="forgot">パスワードをお忘れですか？</div>
+      <div class="remember">
+        <label><input type="checkbox" id="rememberMe" /> ログインを保持する</label>
+      </div>
+      <div class="policy">
+        続行をクリックすることで、あなたは私たちの利用規約と<br>
+        プライバシーポリシーに同意したことになります。
+      </div>
+      <button type="submit" id="loginButton">次へ</button>
+    </form>
+    <div id="errorMessage" class="error-message"></div>
+    <div id="loadingMessage" class="loading-message">ログイン中...</div>
+    <div class="register">新規登録はこちら</div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
