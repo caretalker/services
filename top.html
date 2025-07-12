@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トップページ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-box">
+            <h1>ようこそ！</h1>
+            <div class="user-info">
+                <p>メールアドレス: <span id="userEmail"></span></p>
+                <p>シリアル番号: <span id="userSerial"></span></p>
+            </div>
+            <button id="logoutButton" class="logout-btn">ログアウト</button>
+        </div>
+    </div>
+    
+    <script>
+        // ログイン状態をチェック
+        document.addEventListener('DOMContentLoaded', function() {
+            const userSerial = sessionStorage.getItem('userSerial');
+            const userEmail = sessionStorage.getItem('userEmail');
+            
+            if (!userSerial || !userEmail) {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // ユーザー情報を表示
+            document.getElementById('userEmail').textContent = userEmail;
+            document.getElementById('userSerial').textContent = userSerial;
+            
+            // ログアウトボタンの処理
+            document.getElementById('logoutButton').addEventListener('click', function() {
+                sessionStorage.removeItem('userSerial');
+                sessionStorage.removeItem('userEmail');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
