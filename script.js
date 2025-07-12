@@ -1,5 +1,4 @@
-// Cloud Runのエンドポイント（デプロイ後に更新してください）
-const CLOUD_RUN_URL = 'https://your-cloud-run-service-url.run.app';
+const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
 
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
