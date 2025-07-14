@@ -3,177 +3,187 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>トップページ</title>
+  <title>home</title>
   <style>
     body {
-      font-family: sans-serif;
       margin: 0;
-      padding: 0;
-      background-color: #fff;
+      font-family: "Helvetica Neue", "メイリオ", sans-serif;
+      background: #fff;
+      max-width: 480px;
+      margin: 0 auto;
+      height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+      padding: 16px;
+      border-bottom: 1px solid #aaa;
+      height: 64px;
+      box-sizing: border-box;
+      background: #f5f5f5;
+    }
+
+    .date {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .header-icons img {
+      width: 24px;
+      height: 24px;
+      margin-left: 12px;
+    }
+
+    .items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
       box-sizing: border-box;
     }
-    .container {
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
+
+    .items::after {
+      content: "";
+      display: block;
+      height: 72px; /* フッターぶんの余白 */
     }
-    h2 {
-      margin-bottom: 0.5em;
-      color: #000;
-      font-size: 24px;
-    }
-    p {
-      margin-bottom: 1em;
-      color: #333;
-      line-height: 1.4;
-    }
-    .user-info {
-      background-color: #f9f9f9;
-      padding: 20px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      border: 1px solid #eee;
-    }
-    .user-info p {
-      margin: 10px 0;
-      font-size: 14px;
-    }
-    .user-info strong {
-      color: #000;
-    }
-    button {
-      background-color: #000;
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px dashed #999;
       font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
+      line-height: 1.6;
+      flex-wrap: wrap;
+    }
+
+    .item div:first-child {
+      width: 75%;
+      word-break: break-word;
+    }
+
+    .item p {
+      margin: 4px 0;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
       width: 100%;
-      transition: background-color 0.3s ease;
+      max-width: 480px;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+      z-index: 10;
     }
-    button:hover {
-      background-color: #333;
-    }
-    .footer-info {
-      margin-top: 20px;
-      font-size: 12px;
-      color: #666;
-    }
-    
-    /* スマートフォン用のレスポンシブ対応 */
-    @media (max-width: 480px) {
-      body {
-        padding: 10px;
-      }
-      
-      .container {
-        width: 100%;
-        max-width: none;
-      }
-      
-      h2 {
-        font-size: 20px;
-      }
-      
-      p {
-        font-size: 14px;
-      }
-      
-      button {
-        padding: 14px 20px;
-        font-size: 16px;
-      }
-      
-      .user-info {
-        padding: 15px;
-      }
-      
-      .footer-info {
-        font-size: 11px;
-      }
-    }
-    
-    /* タブレット用 */
-    @media (min-width: 481px) and (max-width: 768px) {
-      .container {
-        max-width: 450px;
-      }
-    }
-    
-    /* デスクトップ用 */
-    @media (min-width: 769px) {
-      .container {
-        max-width: 400px;
-      }
-      
-      h2 {
-        font-size: 26px;
-      }
+
+    .footer img {
+      width: 28px;
+      height: 28px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>ログイン成功</h2>
-    <p>ようこそ！<br>ログインが正常に完了しました</p>
-    
-    <div class="user-info">
-      <p><strong>メールアドレス:</strong><br><span id="userEmail"></span></p>
-      <p><strong>シリアル番号:</strong><br><span id="userSerial"></span></p>
-    </div>
-    
-    <button id="logoutButton">ログアウト</button>
-    
-    <div class="footer-info">
-      セキュリティのため、使用後はログアウトしてください
+  <div class="header">
+    <div class="date">2025 3/3</div>
+    <div class="header-icons">
+      <img src="notifications.png" alt="通知" />
+      <img src="Settings.png" alt="設定" />
+      <img src="account.png" alt="プロフィール" />
     </div>
   </div>
-  
-  <script>
-    // ログイン状態をチェック
-    document.addEventListener('DOMContentLoaded', function() {
-      const userSerial = sessionStorage.getItem('userSerial');
-      const userEmail = sessionStorage.getItem('userEmail');
-      
-      if (!userSerial || !userEmail) {
-        // ログインしていない場合はログインページにリダイレクト
-        alert('ログインが必要です。ログインページに移動します。');
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      // ユーザー情報を表示
-      document.getElementById('userEmail').textContent = userEmail;
-      document.getElementById('userSerial').textContent = userSerial;
-      
-      // ログアウトボタンの処理
-      document.getElementById('logoutButton').addEventListener('click', function() {
-        if (confirm('ログアウトしますか？')) {
-          // セッション情報をクリア
-          sessionStorage.removeItem('userSerial');
-          sessionStorage.removeItem('userEmail');
-          
-          // ログインページにリダイレクト
-          window.location.href = 'index.html';
-        }
-      });
-    });
-    
-    // ページを離れる前の確認（セキュリティ向上のため）
-    window.addEventListener('beforeunload', function(e) {
-      const userSerial = sessionStorage.getItem('userSerial');
-      if (userSerial) {
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-      }
-    });
-  </script>
+
+  <div class="items">
+    <div class="item">
+      <div>
+        <strong>2025/03/03 動作記録</strong>
+        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
+        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
+        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
+      </div>
+      <div>08:00</div>
+    </div>
+
+    <div class="item">
+      <div>
+        <strong>2025/03/02 動作記録</strong>
+        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
+        <p>会話には参加せず、うつむきがちだった。</p>
+        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
+      </div>
+      <div>08:30</div>
+    </div>
+    <div class="item">
+      <div>
+        <strong>2025/03/03 動作記録</strong>
+        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
+        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
+        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
+      </div>
+      <div>08:00</div>
+    </div>
+
+    <div class="item">
+      <div>
+        <strong>2025/03/02 動作記録</strong>
+        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
+        <p>会話には参加せず、うつむきがちだった。</p>
+        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
+      </div>
+      <div>08:30</div>
+    </div>
+    <div class="item">
+      <div>
+        <strong>2025/03/03 動作記録</strong>
+        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
+        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
+        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
+      </div>
+      <div>08:00</div>
+    </div>
+
+    <div class="item">
+      <div>
+        <strong>2025/03/02 動作記録</strong>
+        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
+        <p>会話には参加せず、うつむきがちだった。</p>
+        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
+      </div>
+      <div>08:30</div>
+    </div>
+    <div class="item">
+      <div>
+        <strong>2025/03/03 動作記録</strong>
+        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
+        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
+        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
+      </div>
+      <div>08:00</div>
+    </div>
+
+    <div class="item">
+      <div>
+        <strong>2025/03/02 動作記録</strong>
+        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
+        <p>会話には参加せず、うつむきがちだった。</p>
+        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
+      </div>
+      <div>08:30</div>
+    </div>
+    <!-- さらに記録が続いてもスクロール表示 -->
+  </div>
+
+  <div class="footer">
+    <img src="Home.png" alt="ホーム" />
+    <img src="List.png" alt="記録" />
+    <img src="File text.png" alt="カルテ" />
+    <img src="Settings.png" alt="設定" />
+  </div>
 </body>
 </html>
