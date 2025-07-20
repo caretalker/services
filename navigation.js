@@ -44,10 +44,10 @@ function setupFooterIcons() {
                     window.location.href = 'top.html';
                     break;
                 case '記録':
-                    window.location.href = 'record.html';
+                    window.location.href = 'calendar.html';
                     break;
                 case 'カルテ':
-                    window.location.href = 'calendar.html';
+                    window.location.href = 'record.html';
                     break;
                 case '設定':
                     window.location.href = 'settings.html';
