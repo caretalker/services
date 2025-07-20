@@ -4,8 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>home</title>
-  <link rel="stylesheet" href="top.css">
-  <script src="top.js"></script>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      box-sizing: border-box;
+      margin-bottom: 72px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px dashed #999;
+      font-size: 16px;
+      line-height: 1.6;
+      flex-wrap: wrap;
+    }
+
+    .item div:first-child {
+      width: 85%;
+      word-break: break-word;
+    }
+
+    .item p {
+      margin: 4px 0;
+    }
+  </style>
 </head>
 <body>
   <div class="header">
@@ -37,64 +64,25 @@
       </div>
       <div>08:30</div>
     </div>
+    
     <div class="item">
       <div>
-        <strong>2025/03/03 動作記録</strong>
-        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
-        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
-        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
+        <strong>2025/03/01 動作記録</strong>
+        <p>午前中はデイサービスに参加。リハビリ体操に積極的に取り組む。</p>
+        <p>昼食は完食。スタッフとの会話も弾んでいた。</p>
+        <p>午後は読書をして過ごし、リラックスした様子。</p>
       </div>
-      <div>08:00</div>
+      <div>13:00</div>
     </div>
 
     <div class="item">
       <div>
-        <strong>2025/03/02 動作記録</strong>
-        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
-        <p>会話には参加せず、うつむきがちだった。</p>
-        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
+        <strong>2025/02/28 服薬記録</strong>
+        <p>朝の降圧剤を予定通り服用。水分摂取も十分。</p>
+        <p>血圧測定：125/80 正常範囲内。</p>
       </div>
-      <div>08:30</div>
+      <div>09:00</div>
     </div>
-    <div class="item">
-      <div>
-        <strong>2025/03/03 動作記録</strong>
-        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
-        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
-        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
-      </div>
-      <div>08:00</div>
-    </div>
-
-    <div class="item">
-      <div>
-        <strong>2025/03/02 動作記録</strong>
-        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
-        <p>会話には参加せず、うつむきがちだった。</p>
-        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
-      </div>
-      <div>08:30</div>
-    </div>
-    <div class="item">
-      <div>
-        <strong>2025/03/03 動作記録</strong>
-        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
-        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
-        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
-      </div>
-      <div>08:00</div>
-    </div>
-
-    <div class="item">
-      <div>
-        <strong>2025/03/02 動作記録</strong>
-        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
-        <p>会話には参加せず、うつむきがちだった。</p>
-        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
-      </div>
-      <div>08:30</div>
-    </div>
-    <!-- さらに記録が続いてもスクロール表示 -->
   </div>
 
   <div class="footer">
@@ -103,5 +91,7 @@
     <img src="File text.png" alt="カルテ" />
     <img src="Settings.png" alt="設定" />
   </div>
+
+  <script src="navigation.js"></script>
 </body>
 </html>
