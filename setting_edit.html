@@ -3,33 +3,328 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>設定内容の確認</title>
-  <link rel="stylesheet" href="setting_edit.css">
+  <title>設定内容の編集</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .main-content {
+      padding: 16px;
+      margin-bottom: 100px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+
+    .item {
+      margin-bottom: 16px;
+    }
+
+    .item label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .item input,
+    .item select,
+    .item textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .item textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .buttons {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      padding: 16px;
+      background: white;
+      border-top: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+
+    .button {
+      flex: 1;
+      margin: 0 8px;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cancel-button {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .cancel-button:hover {
+      background-color: #5a6268;
+    }
+
+    .submit-button {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .submit-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h1>入力内容の確認</h1>
-  <div class="item"><label>姓</label><div class="value">山田</div></div>
-  <div class="item"><label>名</label><div class="value">太郎</div></div>
-  <div class="item"><label>フリガナ（セイ）</label><div class="value">ヤマダ</div></div>
-  <div class="item"><label>フリガナ（メイ）</label><div class="value">タロウ</div></div>
-  <div class="item"><label>年齢</label><div class="value">76</div></div>
-  <div class="item"><label>性別</label><div class="value">男性</div></div>
-  <div class="item"><label>住所</label><div class="value">東京都港区1-2-3</div></div>
-  <div class="item"><label>ご家族の住所</label><div class="value">東京都渋谷区4-5-6</div></div>
-  <div class="item"><label>緊急連絡先</label><div class="value">090-1234-5678</div></div>
-  <div class="item"><label>服薬中の薬</label><div class="value">降圧剤</div></div>
-  <div class="item"><label>服薬頻度</label><div class="value">毎朝1回</div></div>
-  <div class="item"><label>持病</label><div class="value">高血圧</div></div>
-  <div class="item"><label>アレルギー</label><div class="value">なし</div></div>
-  <div class="item"><label>趣味</label><div class="value">園芸</div></div>
-  <div class="item"><label>普段の主な外出先</label><div class="value">近所のスーパー</div></div>
-  <div class="item"><label>ゴミ出し日</label><div class="value">月・木・土</div></div>
-  <div class="item"><label>デイサービス頻度</label><div class="value">週3回</div></div>
-  <div class="item"><label>その他リマインドしたい情報</label><div class="value">お風呂：毎週火曜と金曜</div></div>
-  
-  <div class="buttons">
-    <button class="button edit-button" onclick="history.back()">修正する</button>
-    <button class="button submit-button" onclick="alert('送信しました')">送信</button>
+  <div class="header">
+    <div class="date">2025 3/3</div>
+    <div class="header-icons">
+      <img src="notifications.png" alt="通知" />
+      <img src="Settings.png" alt="設定" />
+      <img src="account_circle.png" alt="プロフィール" />
+    </div>
   </div>
+
+  <div class="main-content">
+    <h1>プロフィール編集</h1>
+    
+    <form id="profileForm">
+      <div class="item">
+        <label for="lastName">姓</label>
+        <input type="text" id="lastName" name="lastName" value="山田" required>
+      </div>
+      
+      <div class="item">
+        <label for="firstName">名</label>
+        <input type="text" id="firstName" name="firstName" value="太郎" required>
+      </div>
+      
+      <div class="item">
+        <label for="lastNameKana">フリガナ（セイ）</label>
+        <input type="text" id="lastNameKana" name="lastNameKana" value="ヤマダ" required>
+      </div>
+      
+      <div class="item">
+        <label for="firstNameKana">フリガナ（メイ）</label>
+        <input type="text" id="firstNameKana" name="firstNameKana" value="タロウ" required>
+      </div>
+      
+      <div class="item">
+        <label for="age">年齢</label>
+        <input type="number" id="age" name="age" value="76" min="0" max="120" required>
+      </div>
+      
+      <div class="item">
+        <label for="gender">性別</label>
+        <select id="gender" name="gender" required>
+          <option value="男性" selected>男性</option>
+          <option value="女性">女性</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      
+      <div class="item">
+        <label for="address">住所</label>
+        <input type="text" id="address" name="address" value="東京都港区1-2-3" required>
+      </div>
+      
+      <div class="item">
+        <label for="familyAddress">ご家族の住所</label>
+        <input type="text" id="familyAddress" name="familyAddress" value="東京都渋谷区4-5-6">
+      </div>
+      
+      <div class="item">
+        <label for="emergency">緊急連絡先</label>
+        <input type="tel" id="emergency" name="emergency" value="090-1234-5678" required>
+      </div>
+      
+      <div class="item">
+        <label for="medication">服薬中の薬</label>
+        <input type="text" id="medication" name="medication" value="降圧剤">
+      </div>
+      
+      <div class="item">
+        <label for="medicationFreq">服薬頻度</label>
+        <select id="medicationFreq" name="medicationFreq" onchange="toggleOtherMedicationInput()">
+          <option value="">なし</option>
+          <option value="毎朝1回" selected>毎朝1回</option>
+          <option value="朝夕2回">朝夕2回</option>
+          <option value="毎食後">毎食後</option>
+          <option value="週1回">週1回</option>
+          <option value="その他">その他</option>
+        </select>
+        <input type="text" id="medicationFreqOther" name="medicationFreqOther" placeholder="その他の服薬頻度を入力してください" style="display: none; margin-top: 8px;">
+      </div>
+      
+      <div class="item">
+        <label for="illness">持病</label>
+        <input type="text" id="illness" name="illness" value="高血圧">
+      </div>
+      
+      <div class="item">
+        <label for="allergy">アレルギー</label>
+        <input type="text" id="allergy" name="allergy" value="なし">
+      </div>
+      
+      <div class="item">
+        <label for="hobby">趣味</label>
+        <input type="text" id="hobby" name="hobby" value="園芸">
+      </div>
+      
+      <div class="item">
+        <label for="destination">普段の主な外出先</label>
+        <input type="text" id="destination" name="destination" value="近所のスーパー">
+      </div>
+      
+      <div class="item">
+        <label>ゴミ出し日</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="mon" name="trashDays" value="月" checked>
+            <label for="mon">月</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="tue" name="trashDays" value="火">
+            <label for="tue">火</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="wed" name="trashDays" value="水">
+            <label for="wed">水</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="thu" name="trashDays" value="木" checked>
+            <label for="thu">木</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="fri" name="trashDays" value="金">
+            <label for="fri">金</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="sat" name="trashDays" value="土" checked>
+            <label for="sat">土</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="sun" name="trashDays" value="日">
+            <label for="sun">日</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="item">
+        <label for="dayServiceFreq">デイサービス頻度</label>
+        <select id="dayServiceFreq" name="dayServiceFreq">
+          <option value="">利用しない</option>
+          <option value="週1回">週1回</option>
+          <option value="週2回">週2回</option>
+          <option value="週3回" selected>週3回</option>
+          <option value="週4回">週4回</option>
+          <option value="週5回">週5回</option>
+          <option value="毎日">毎日</option>
+        </select>
+      </div>
+      
+      <div class="item">
+        <label for="otherInfo">その他リマインドしたい情報</label>
+        <textarea id="otherInfo" name="otherInfo" placeholder="例：お風呂の日、通院予定など">お風呂：毎週火曜と金曜</textarea>
+      </div>
+    </form>
+  </div>
+
+  <div class="buttons">
+    <button type="button" class="button cancel-button" onclick="history.back()">キャンセル</button>
+    <button type="button" class="button submit-button" onclick="saveAndReturn()">保存</button>
+  </div>
+
+  <script src="navigation.js"></script>
+  <script>
+    function toggleOtherMedicationInput() {
+      const select = document.getElementById('medicationFreq');
+      const otherInput = document.getElementById('medicationFreqOther');
+      
+      if (select.value === 'その他') {
+        otherInput.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
+
+    function saveAndReturn() {
+      // フォームの入力値を取得
+      const formData = new FormData(document.getElementById('profileForm'));
+      
+      // ゴミ出し日のチェックボックスを処理
+      const trashDays = [];
+      document.querySelectorAll('input[name="trashDays"]:checked').forEach(checkbox => {
+        trashDays.push(checkbox.value);
+      });
+      
+      // 服薬頻度の処理
+      let medicationFreq = formData.get('medicationFreq');
+      if (medicationFreq === 'その他') {
+        medicationFreq = formData.get('medicationFreqOther');
+      }
+      
+      // 保存処理（実際の実装では、サーバーに送信またはlocalStorageに保存）
+      console.log('保存データ:', {
+        lastName: formData.get('lastName'),
+        firstName: formData.get('firstName'),
+        lastNameKana: formData.get('lastNameKana'),
+        firstNameKana: formData.get('firstNameKana'),
+        age: formData.get('age'),
+        gender: formData.get('gender'),
+        address: formData.get('address'),
+        familyAddress: formData.get('familyAddress'),
+        emergency: formData.get('emergency'),
+        medication: formData.get('medication'),
+        medicationFreq: medicationFreq,
+        illness: formData.get('illness'),
+        allergy: formData.get('allergy'),
+        hobby: formData.get('hobby'),
+        destination: formData.get('destination'),
+        trashDays: trashDays.join('・'),
+        dayServiceFreq: formData.get('dayServiceFreq'),
+        otherInfo: formData.get('otherInfo')
+      });
+      
+      // 保存完了メッセージ
+      alert('プロフィールを保存しました');
+      
+      // settings.htmlに戻る
+      window.location.href = 'settings.html';
+    }
+  </script>
 </body>
 </html>
