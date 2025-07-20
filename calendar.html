@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>カレンダー</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .calendar-container {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-y: auto;
+    }
+
+    .calendar-body-wrapper {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .search-button {
+      background-color: #ccc;
+      color: #333;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 12px;
+      transition: background-color 0.2s ease;
+    }
+
+    .search-button:hover {
+      background-color: #ddd;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-weight: bold;
+      align-items: center;
+    }
+
+    .calendar-header span {
+      margin: 0 10px;
+    }
+
+    .arrow-button {
+      background-color: #f5f5f5;
+      color: #000000;
+      border: none;
+      cursor: pointer;
+      padding: 6px 12px;
+      font-size: 16px;
+      transition: background-color 0.2s ease;
+      border-radius: 4px;
+    }
+
+    .arrow-button:hover {
+      background-color: #f5f5f5;
+      color: #999;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      text-align: center;
+    }
+
+    .calendar-day {
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .calendar-day:hover {
+      background-color: #e0e0e0;
+    }
+
+    .selected {
+      background-color: #999;
+      color: #fff;
+      border-radius: 6px;
+    }
+
+    .ok-button {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .ok-button button {
+      background-color: #ccc;
+      color: #333;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 12px;
+      transition: background-color 0.2s ease;
+    }
+
+    .ok-button button:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="date">2025 3/3</div>
+    <div class="header-icons">
+      <img src="notifications.png" alt="通知" />
+      <img src="Settings.png" alt="設定" />
+      <img src="account_circle.png" alt="プロフィール" />
+    </div>
+  </div>
+
+  <div class="calendar-container">
+    <div class="calendar-body-wrapper">
+      <div class="search">
+        <input type="text" placeholder="履歴を検索..." />
+        <button class="search-button">検査</button>
+      </div>
+
+      <div class="calendar-header">
+        <button class="arrow-button">&lt;</button>
+        <span>8月</span>
+        <button class="arrow-button">&gt;</button>
+        <button class="arrow-button">&lt;</button>
+        <span>2025</span>
+        <button class="arrow-button">&gt;</button>
+      </div>
+      
+      <div class="calendar">
+        <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+        <div></div><div></div><div></div><div></div><div></div><div></div><div class="calendar-day">1</div>
+        <div class="calendar-day">2</div><div class="calendar-day">3</div><div class="calendar-day">4</div><div class="calendar-day">5</div><div class="calendar-day">6</div><div class="calendar-day">7</div><div class="calendar-day">8</div>
+        <div class="calendar-day">9</div><div class="calendar-day">10</div><div class="calendar-day">11</div><div class="calendar-day">12</div><div class="calendar-day">13</div><div class="calendar-day">14</div><div class="calendar-day">15</div>
+        <div class="calendar-day">16</div><div class="calendar-day selected">17</div><div class="calendar-day">18</div><div class="calendar-day">19</div><div class="calendar-day">20</div><div class="calendar-day">21</div><div class="calendar-day">22</div>
+      </div>
+
+      <div class="ok-button">
+        <button>OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <img src="Home.png" alt="ホーム" />
+    <img src="List.png" alt="記録" />
+    <img src="File text.png" alt="カルテ" />
+    <img src="Settings.png" alt="設定" />
+  </div>
+
+  <script src="navigation.js"></script>
+</body>
+</html>
