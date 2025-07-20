@@ -4,7 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>アカウント設定</title>
-  <link rel="stylesheet" href="settings.css">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .edit-button-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 16px;
+    }
+
+    .edit-button {
+      padding: 6px 12px;
+      font-size: 14px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .edit-button:hover {
+      background-color: #0056b3;
+    }
+
+    .items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      box-sizing: border-box;
+      margin-bottom: 72px;
+    }
+
+    .item {
+      margin-bottom: 16px;
+    }
+
+    .item label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .item .value {
+      padding: 8px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
   <div class="header">
@@ -47,5 +92,7 @@
     <img src="File text.png" alt="カルテ" />
     <img src="Settings.png" alt="設定" />
   </div>
+
+  <script src="navigation.js"></script>
 </body>
 </html>
