@@ -55,6 +55,12 @@
     .main button:hover {
       background: #e5e5e5;
     }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
@@ -67,10 +73,12 @@
     </div>
   </div>
 
-  <div class="main">
+  <div id="loadingMessage" class="loading">プロフィールを読み込み中...</div>
+
+  <div class="main" id="mainContent" style="display: none;">
     <div class="profile">
       <img src="account_circle.png" alt="プロフィール画像" />
-      <h2>山田 花子</h2>
+      <h2 id="userName">読み込み中...</h2>
     </div>
 
     <div class="section-label">設定と管理</div>
@@ -96,5 +104,60 @@
   </div>
 
   <script src="navigation.js"></script>
+  <script>
+    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
+
+    // ページ読み込み時にプロフィールデータを取得
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserProfile();
+    });
+
+    async function loadUserProfile() {
+      try {
+        // セッションストレージからクライアントIDを取得
+        const clientId = sessionStorage.getItem('userSerial');
+        
+        if (!clientId) {
+          // ログインしていない場合はログイン画面に戻る
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // APIからプロフィールデータを取得
+        const response = await fetch(`${CLOUD_RUN_URL}/profile/${clientId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // 名前を表示
+          const lastName = data.data.lastName || '';
+          const firstName = data.data.firstName || '';
+          const fullName = `${lastName} ${firstName}`.trim();
+          
+          document.getElementById('userName').textContent = fullName || 'ユーザー';
+          
+          // ローディングを隠してメインコンテンツを表示
+          document.getElementById('loadingMessage').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+        } else {
+          // プロフィール取得に失敗した場合はデフォルト名を表示
+          document.getElementById('userName').textContent = 'ユーザー';
+          document.getElementById('loadingMessage').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Profile load error:', error);
+        // エラーの場合もデフォルト名を表示
+        document.getElementById('userName').textContent = 'ユーザー';
+        document.getElementById('loadingMessage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+      }
+    }
+  </script>
 </body>
 </html>
