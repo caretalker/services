@@ -49,6 +49,21 @@
       background-color: #f0f0f0;
       border-radius: 4px;
     }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .error {
+      text-align: center;
+      padding: 20px;
+      color: #e74c3c;
+      background-color: #ffeaea;
+      border-radius: 4px;
+      margin: 16px;
+    }
   </style>
 </head>
 <body>
@@ -62,28 +77,31 @@
   </div>
 
   <div class="edit-button-wrapper">
-    <button class="edit-button" onclick="location.href='setting_edit.html'">編集</button>
+    <button class="edit-button" onclick="editProfile()">編集</button>
   </div>
 
-  <div class="items">
-    <div class="item"><label>姓</label><div class="value">山田</div></div>
-    <div class="item"><label>名</label><div class="value">太郎</div></div>
-    <div class="item"><label>フリガナ（セイ）</label><div class="value">ヤマダ</div></div>
-    <div class="item"><label>フリガナ（メイ）</label><div class="value">タロウ</div></div>
-    <div class="item"><label>年齢</label><div class="value">76</div></div>
-    <div class="item"><label>性別</label><div class="value">男性</div></div>
-    <div class="item"><label>住所</label><div class="value">東京都港区1-2-3</div></div>
-    <div class="item"><label>ご家族の住所</label><div class="value">東京都渋谷区4-5-6</div></div>
-    <div class="item"><label>緊急連絡先</label><div class="value">090-1234-5678</div></div>
-    <div class="item"><label>服薬中の薬</label><div class="value">降圧剤</div></div>
-    <div class="item"><label>服薬頻度</label><div class="value">毎朝1回</div></div>
-    <div class="item"><label>持病</label><div class="value">高血圧</div></div>
-    <div class="item"><label>アレルギー</label><div class="value">なし</div></div>
-    <div class="item"><label>趣味</label><div class="value">園芸</div></div>
-    <div class="item"><label>普段の主な外出先</label><div class="value">近所のスーパー</div></div>
-    <div class="item"><label>ゴミ出し日</label><div class="value">月・木・土</div></div>
-    <div class="item"><label>デイサービス頻度</label><div class="value">週3回</div></div>
-    <div class="item"><label>その他リマインドしたい情報</label><div class="value">お風呂：毎週火曜と金曜</div></div>
+  <div id="loadingMessage" class="loading">プロフィールを読み込み中...</div>
+  <div id="errorMessage" class="error" style="display: none;"></div>
+
+  <div class="items" id="profileItems" style="display: none;">
+    <div class="item"><label>姓</label><div class="value" id="lastName">-</div></div>
+    <div class="item"><label>名</label><div class="value" id="firstName">-</div></div>
+    <div class="item"><label>フリガナ（セイ）</label><div class="value" id="lastNameKana">-</div></div>
+    <div class="item"><label>フリガナ（メイ）</label><div class="value" id="firstNameKana">-</div></div>
+    <div class="item"><label>年齢</label><div class="value" id="age">-</div></div>
+    <div class="item"><label>性別</label><div class="value" id="gender">-</div></div>
+    <div class="item"><label>住所</label><div class="value" id="address">-</div></div>
+    <div class="item"><label>ご家族の住所</label><div class="value" id="familyAddress">-</div></div>
+    <div class="item"><label>緊急連絡先</label><div class="value" id="emergency">-</div></div>
+    <div class="item"><label>服薬中の薬</label><div class="value" id="medication">-</div></div>
+    <div class="item"><label>服薬頻度</label><div class="value" id="medicationFreq">-</div></div>
+    <div class="item"><label>持病</label><div class="value" id="illness">-</div></div>
+    <div class="item"><label>アレルギー</label><div class="value" id="allergy">-</div></div>
+    <div class="item"><label>趣味</label><div class="value" id="hobby">-</div></div>
+    <div class="item"><label>普段の主な外出先</label><div class="value" id="destination">-</div></div>
+    <div class="item"><label>ゴミ出し日</label><div class="value" id="trashDays">-</div></div>
+    <div class="item"><label>デイサービス頻度</label><div class="value" id="dayServiceFreq">-</div></div>
+    <div class="item"><label>その他リマインドしたい情報</label><div class="value" id="otherInfo">-</div></div>
   </div>
 
   <div class="footer">
@@ -94,5 +112,92 @@
   </div>
 
   <script src="navigation.js"></script>
+  <script>
+    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
+    let currentProfileData = null;
+
+    // ページ読み込み時にプロフィールデータを取得
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfile();
+    });
+
+    async function loadProfile() {
+      try {
+        // セッションストレージからクライアントIDを取得
+        const clientId = sessionStorage.getItem('userSerial');
+        
+        if (!clientId) {
+          showError('ログインが必要です。ログインページに戻ります。');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+          return;
+        }
+
+        // APIからプロフィールデータを取得
+        const response = await fetch(`${CLOUD_RUN_URL}/profile/${clientId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          currentProfileData = data.data;
+          displayProfile(data.data);
+          hideLoading();
+        } else {
+          showError(data.message || 'プロフィール取得に失敗しました');
+        }
+      } catch (error) {
+        console.error('Profile load error:', error);
+        showError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
+      }
+    }
+
+    function displayProfile(data) {
+      // 各フィールドにデータを表示
+      document.getElementById('lastName').textContent = data.lastName || '-';
+      document.getElementById('firstName').textContent = data.firstName || '-';
+      document.getElementById('lastNameKana').textContent = data.lastNameKana || '-';
+      document.getElementById('firstNameKana').textContent = data.firstNameKana || '-';
+      document.getElementById('age').textContent = data.age || '-';
+      document.getElementById('gender').textContent = data.gender || '-';
+      document.getElementById('address').textContent = data.address || '-';
+      document.getElementById('familyAddress').textContent = data.familyAddress || '-';
+      document.getElementById('emergency').textContent = data.emergency || '-';
+      document.getElementById('medication').textContent = data.medication || '-';
+      document.getElementById('medicationFreq').textContent = data.medicationFreq || '-';
+      document.getElementById('illness').textContent = data.illness || '-';
+      document.getElementById('allergy').textContent = data.allergy || '-';
+      document.getElementById('hobby').textContent = data.hobby || '-';
+      document.getElementById('destination').textContent = data.destination || '-';
+      document.getElementById('trashDays').textContent = data.trashDays || '-';
+      document.getElementById('dayServiceFreq').textContent = data.dayServiceFreq || '-';
+      document.getElementById('otherInfo').textContent = data.otherInfo || '-';
+
+      document.getElementById('profileItems').style.display = 'block';
+    }
+
+    function editProfile() {
+      if (currentProfileData) {
+        // プロフィールデータをセッションストレージに保存して編集画面に渡す
+        sessionStorage.setItem('profileData', JSON.stringify(currentProfileData));
+      }
+      window.location.href = 'setting_edit.html';
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorMessage').style.display = 'block';
+      hideLoading();
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingMessage').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
