@@ -103,6 +103,197 @@
     .submit-button:hover {
       background-color: #0056b3;
     }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="date">2025 3/3</div>
+    <div class="header-icons">
+      <img src="notifications.png" alt="通知" />
+      <img src="Settings.png" alt="設定" />
+      <img src="account_circle.png" alt="プロフィール" />
+    </div>
+  </div>
+
+  <div id="loadingMessage" class="loading">プロフィールデータを読み込み中...</div>
+
+  <div class="main-content" id="mainContent" style="display: none;">
+    <h1>プロフィール編集</h1>
+    
+    <form id="profileForm">
+      <div class="item">
+        <label for="lastName">姓</label>
+        <input type="text" id="lastName" name="lastName" required>
+      </div>
+      
+      <div class="item">
+        <label for="firstName">名</label>
+        <input type="text" id="firstName" name="firstName" required>
+      </div>
+      
+      <div class="item">
+        <label for="lastNameKana">フリガナ（セイ）</label>
+        <input type="text" id="lastNameKana" name="lastNameKana" required>
+      </div>
+      
+      <div class="item">
+        <label for="firstNameKana">フリガナ（メイ）</label>
+        <input type="text" id="firstNameKana" name="firstNameKana" required>
+      </div>
+      
+      <div class="item">
+        <label for="age">年齢</label>
+        <input type="number" id="age" name="age" min="0" max="120" required>
+      </div>
+      
+      <div class="item">
+        <label for="gender">性別</label>
+        <select id="gender" name="gender" required>
+          <option value="男性">男性</option>
+          <option value="女性">女性</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      
+      <div class="item">
+        <label for="address">住所</label>
+        <input type="text" id="address" name="address" required>
+      </div>
+      
+      <div class="item">
+        <label for="familyAddress">ご家族の住所</label>
+        <input type="text" id="familyAddress" name="familyAddress">
+      </div>
+      
+      <div class="item">
+        <label for="emergency">緊急連絡先</label>
+        <input type="tel" id="emergency" name="emergency" required>
+      </div>
+      
+      <div class="item">
+        <label for="medication">服薬中の薬</label>
+        <input type="text" id="medication" name="medication">
+      </div>
+      
+      <div class="item">
+        <label for="medicationFreq">服薬頻度</label>
+        <select id="medicationFreq" name="medicationFreq" onchange="toggleOtherMedicationInput()">
+          <option value="">なし</option>
+          <option value="毎朝1回">毎朝1回</option>
+          <option value="朝夕2回">朝夕2回</option>
+          <option value="毎食後">毎食後</option>
+          <option value="週1回">週1回</option>
+          <option value="その他<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>設定内容の編集</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .main-content {
+      padding: 16px;
+      margin-bottom: 100px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+
+    .item {
+      margin-bottom: 16px;
+    }
+
+    .item label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .item input,
+    .item select,
+    .item textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .item textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .buttons {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      padding: 16px;
+      background: white;
+      border-top: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+
+    .button {
+      flex: 1;
+      margin: 0 8px;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cancel-button {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .cancel-button:hover {
+      background-color: #5a6268;
+    }
+
+    .submit-button {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .submit-button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -177,7 +368,7 @@
         <label for="medicationFreq">服薬頻度</label>
         <select id="medicationFreq" name="medicationFreq" onchange="toggleOtherMedicationInput()">
           <option value="">なし</option>
-          <option value="毎朝1回" selected>毎朝1回</option>
+          <option value="毎朝1回">毎朝1回</option>
           <option value="朝夕2回">朝夕2回</option>
           <option value="毎食後">毎食後</option>
           <option value="週1回">週1回</option>
@@ -188,29 +379,29 @@
       
       <div class="item">
         <label for="illness">持病</label>
-        <input type="text" id="illness" name="illness" value="高血圧">
+        <input type="text" id="illness" name="illness">
       </div>
       
       <div class="item">
         <label for="allergy">アレルギー</label>
-        <input type="text" id="allergy" name="allergy" value="なし">
+        <input type="text" id="allergy" name="allergy">
       </div>
       
       <div class="item">
         <label for="hobby">趣味</label>
-        <input type="text" id="hobby" name="hobby" value="園芸">
+        <input type="text" id="hobby" name="hobby">
       </div>
       
       <div class="item">
         <label for="destination">普段の主な外出先</label>
-        <input type="text" id="destination" name="destination" value="近所のスーパー">
+        <input type="text" id="destination" name="destination">
       </div>
       
       <div class="item">
         <label>ゴミ出し日</label>
         <div class="checkbox-group">
           <div class="checkbox-item">
-            <input type="checkbox" id="mon" name="trashDays" value="月" checked>
+            <input type="checkbox" id="mon" name="trashDays" value="月">
             <label for="mon">月</label>
           </div>
           <div class="checkbox-item">
@@ -222,7 +413,7 @@
             <label for="wed">水</label>
           </div>
           <div class="checkbox-item">
-            <input type="checkbox" id="thu" name="trashDays" value="木" checked>
+            <input type="checkbox" id="thu" name="trashDays" value="木">
             <label for="thu">木</label>
           </div>
           <div class="checkbox-item">
@@ -230,7 +421,7 @@
             <label for="fri">金</label>
           </div>
           <div class="checkbox-item">
-            <input type="checkbox" id="sat" name="trashDays" value="土" checked>
+            <input type="checkbox" id="sat" name="trashDays" value="土">
             <label for="sat">土</label>
           </div>
           <div class="checkbox-item">
@@ -246,7 +437,7 @@
           <option value="">利用しない</option>
           <option value="週1回">週1回</option>
           <option value="週2回">週2回</option>
-          <option value="週3回" selected>週3回</option>
+          <option value="週3回">週3回</option>
           <option value="週4回">週4回</option>
           <option value="週5回">週5回</option>
           <option value="毎日">毎日</option>
@@ -255,7 +446,7 @@
       
       <div class="item">
         <label for="otherInfo">その他リマインドしたい情報</label>
-        <textarea id="otherInfo" name="otherInfo" placeholder="例：お風呂の日、通院予定など">お風呂：毎週火曜と金曜</textarea>
+        <textarea id="otherInfo" name="otherInfo" placeholder="例：お風呂の日、通院予定など"></textarea>
       </div>
     </form>
   </div>
@@ -267,6 +458,105 @@
 
   <script src="navigation.js"></script>
   <script>
+    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
+
+    // ページ読み込み時にプロフィールデータを設定
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfileData();
+    });
+
+    function loadProfileData() {
+      // セッションストレージからプロフィールデータを取得
+      const profileDataStr = sessionStorage.getItem('profileData');
+      
+      if (profileDataStr) {
+        const profileData = JSON.parse(profileDataStr);
+        populateForm(profileData);
+        document.getElementById('loadingMessage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+      } else {
+        // プロフィールデータがない場合はAPIから取得
+        fetchProfileData();
+      }
+    }
+
+    async function fetchProfileData() {
+      try {
+        const clientId = sessionStorage.getItem('userSerial');
+        
+        if (!clientId) {
+          alert('ログインが必要です。');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        const response = await fetch(`${CLOUD_RUN_URL}/profile/${clientId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          populateForm(data.data);
+          document.getElementById('loadingMessage').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+        } else {
+          alert('プロフィールデータの取得に失敗しました: ' + (data.message || ''));
+        }
+      } catch (error) {
+        console.error('Profile fetch error:', error);
+        alert('ネットワークエラーが発生しました。');
+      }
+    }
+
+    function populateForm(data) {
+      // フォームにデータを設定
+      document.getElementById('lastName').value = data.lastName || '';
+      document.getElementById('firstName').value = data.firstName || '';
+      document.getElementById('lastNameKana').value = data.lastNameKana || '';
+      document.getElementById('firstNameKana').value = data.firstNameKana || '';
+      document.getElementById('age').value = data.age || '';
+      document.getElementById('gender').value = data.gender || '男性';
+      document.getElementById('address').value = data.address || '';
+      document.getElementById('familyAddress').value = data.familyAddress || '';
+      document.getElementById('emergency').value = data.emergency || '';
+      document.getElementById('medication').value = data.medication || '';
+      
+      // 服薬頻度の設定
+      const medicationFreq = data.medicationFreq || '';
+      const medicationSelect = document.getElementById('medicationFreq');
+      const isCustomFreq = !['', '毎朝1回', '朝夕2回', '毎食後', '週1回'].includes(medicationFreq);
+      
+      if (isCustomFreq && medicationFreq) {
+        medicationSelect.value = 'その他';
+        document.getElementById('medicationFreqOther').value = medicationFreq;
+        toggleOtherMedicationInput();
+      } else {
+        medicationSelect.value = medicationFreq;
+      }
+      
+      document.getElementById('illness').value = data.illness || '';
+      document.getElementById('allergy').value = data.allergy || '';
+      document.getElementById('hobby').value = data.hobby || '';
+      document.getElementById('destination').value = data.destination || '';
+      
+      // ゴミ出し日の設定
+      const trashDays = data.trashDays || '';
+      const days = ['月', '火', '水', '木', '金', '土', '日'];
+      days.forEach(day => {
+        const checkbox = document.querySelector(`input[value="${day}"]`);
+        if (checkbox) {
+          checkbox.checked = trashDays.includes(day);
+        }
+      });
+      
+      document.getElementById('dayServiceFreq').value = data.dayServiceFreq || '';
+      document.getElementById('otherInfo').value = data.otherInfo || '';
+    }
+
     function toggleOtherMedicationInput() {
       const select = document.getElementById('medicationFreq');
       const otherInput = document.getElementById('medicationFreqOther');
@@ -281,49 +571,80 @@
       }
     }
 
-    function saveAndReturn() {
-      // フォームの入力値を取得
-      const formData = new FormData(document.getElementById('profileForm'));
-      
-      // ゴミ出し日のチェックボックスを処理
-      const trashDays = [];
-      document.querySelectorAll('input[name="trashDays"]:checked').forEach(checkbox => {
-        trashDays.push(checkbox.value);
-      });
-      
-      // 服薬頻度の処理
-      let medicationFreq = formData.get('medicationFreq');
-      if (medicationFreq === 'その他') {
-        medicationFreq = formData.get('medicationFreqOther');
+    async function saveAndReturn() {
+      try {
+        const clientId = sessionStorage.getItem('userSerial');
+        
+        if (!clientId) {
+          alert('ログインが必要です。');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // フォームの入力値を取得
+        const formData = new FormData(document.getElementById('profileForm'));
+        
+        // ゴミ出し日のチェックボックスを処理
+        const trashDays = [];
+        document.querySelectorAll('input[name="trashDays"]:checked').forEach(checkbox => {
+          trashDays.push(checkbox.value);
+        });
+        
+        // 服薬頻度の処理
+        let medicationFreq = formData.get('medicationFreq');
+        if (medicationFreq === 'その他') {
+          medicationFreq = formData.get('medicationFreqOther');
+        }
+
+        // 保存データの準備
+        const saveData = {
+          lastName: formData.get('lastName'),
+          firstName: formData.get('firstName'),
+          lastNameKana: formData.get('lastNameKana'),
+          firstNameKana: formData.get('firstNameKana'),
+          age: formData.get('age'),
+          gender: formData.get('gender'),
+          address: formData.get('address'),
+          familyAddress: formData.get('familyAddress'),
+          emergency: formData.get('emergency'),
+          medication: formData.get('medication'),
+          medicationFreq: medicationFreq,
+          illness: formData.get('illness'),
+          allergy: formData.get('allergy'),
+          hobby: formData.get('hobby'),
+          destination: formData.get('destination'),
+          trashDays: trashDays.join('・'),
+          dayServiceFreq: formData.get('dayServiceFreq'),
+          otherInfo: formData.get('otherInfo')
+        };
+
+        // APIでプロフィールを更新
+        const response = await fetch(`${CLOUD_RUN_URL}/profile/${clientId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(saveData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // 保存完了メッセージ
+          alert('プロフィールを保存しました');
+          
+          // セッションストレージのプロフィールデータを削除
+          sessionStorage.removeItem('profileData');
+          
+          // settings.htmlに戻る
+          window.location.href = 'settings.html';
+        } else {
+          alert('保存に失敗しました: ' + (data.message || ''));
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        alert('ネットワークエラーが発生しました。');
       }
-      
-      // 保存処理（実際の実装では、サーバーに送信またはlocalStorageに保存）
-      console.log('保存データ:', {
-        lastName: formData.get('lastName'),
-        firstName: formData.get('firstName'),
-        lastNameKana: formData.get('lastNameKana'),
-        firstNameKana: formData.get('firstNameKana'),
-        age: formData.get('age'),
-        gender: formData.get('gender'),
-        address: formData.get('address'),
-        familyAddress: formData.get('familyAddress'),
-        emergency: formData.get('emergency'),
-        medication: formData.get('medication'),
-        medicationFreq: medicationFreq,
-        illness: formData.get('illness'),
-        allergy: formData.get('allergy'),
-        hobby: formData.get('hobby'),
-        destination: formData.get('destination'),
-        trashDays: trashDays.join('・'),
-        dayServiceFreq: formData.get('dayServiceFreq'),
-        otherInfo: formData.get('otherInfo')
-      });
-      
-      // 保存完了メッセージ
-      alert('プロフィールを保存しました');
-      
-      // settings.htmlに戻る
-      window.location.href = 'settings.html';
     }
   </script>
 </body>
