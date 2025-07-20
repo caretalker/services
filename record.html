@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>カルテ画面</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .content-container {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-y: auto;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 400px;
+      background: #fff;
+      margin-bottom: 72px;
+    }
+
+    section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    ul {
+      padding-left: 1em;
+    }
+
+    .pdf-button-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .pdf-button {
+      background-color: #000;
+      color: #fff;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .pdf-button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="date">2025 3/3</div>
+    <div class="header-icons">
+      <img src="notifications.png" alt="通知" />
+      <img src="Settings.png" alt="設定" />
+      <img src="account_circle.png" alt="プロフィール" />
+    </div>
+  </div>
+
+  <div class="content-container">
+    <div class="content-wrapper">
+      <p>記入日 0/0</p>
+
+      <section>
+        <div class="section-title">■ 利用者情報</div>
+        <ul>
+          <li>・名前：田中 太郎（たなか たろう）</li>
+          <li>・性別：男</li>
+          <li>・生年月日：1935年4月12日（89歳）</li>
+          <li>・ケアID：KTK000354</li>
+          <li>・担当スタッフ：山本 彩</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="section-title">■ 健康状態</div>
+        <ul>
+          <li>・既往歴：高血圧、糖尿病</li>
+          <li>・アレルギー：ペニシリン</li>
+          <li>・バイタル：</li>
+          <ul>
+            <li>− 血圧：130/85（2025/7/16）</li>
+            <li>− 体温：36.5℃</li>
+            <li>− 脈拍：72 bpm</li>
+          </ul>
+        </ul>
+      </section>
+
+      <section>
+        <div class="section-title">■ 最近のケア記録</div>
+        <ul>
+          <li>・2025/7/15 入浴介助・服薬確認（担当：山本）</li>
+          <li>・2025/7/12 食事介助（低糖質メニュー提供）</li>
+          <li>・2025/7/10 デイサービス送迎</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="section-title">■ スタッフメモ</div>
+        <ul>
+          <li>・2025/7/15：食事量が減少傾向。味の濃いものを希望。</li>
+          <li>・2025/7/10：左足に軽いむくみあり。注意して経過観察。</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="section-title">■ 添付ファイル</div>
+        <ul>
+          <li>・2025/7/15：足の写真（むくみ確認用）</li>
+          <li>・診療情報提供書（PDF）</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="section-title">■ 次回対応予定</div>
+        <ul>
+          <li>・2025/7/18 訪問リハビリ（10:00〜）</li>
+        </ul>
+      </section>
+
+      <div class="pdf-button-wrapper">
+        <a href="#" class="pdf-button">PDF出力</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <img src="Home.png" alt="ホーム" />
+    <img src="List.png" alt="記録" />
+    <img src="File text.png" alt="カルテ" />
+    <img src="Settings.png" alt="設定" />
+  </div>
+
+  <script src="navigation.js"></script>
+</body>
+</html>
