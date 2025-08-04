@@ -4,7 +4,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // フッターアイコンの設定
     setupFooterIcons();
+    
+    // 日付表示を更新
+    updateHeaderDate();
 });
+
+function updateHeaderDate() {
+    const dateElement = document.querySelector('.header .date');
+    if (dateElement) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1;
+        const day = today.getDate();
+        dateElement.textContent = `${year} ${month}/${day}`;
+    }
+}
 
 function setupHeaderIcons() {
     // 通知アイコン
