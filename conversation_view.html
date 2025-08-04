@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>会話履歴</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .content-container {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-y: auto;
+      margin-bottom: 100px;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 400px;
+      background: #fff;
+    }
+
+    .date-header {
+      text-align: center;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 12px;
+    }
+
+    .conversation-items {
+      margin-bottom: 16px;
+    }
+
+    .conversation-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px dashed #999;
+      font-size: 16px;
+      line-height: 1.6;
+      flex-wrap: wrap;
+    }
+
+    .conversation-item div:first-child {
+      width: 85%;
+      word-break: break-word;
+    }
+
+    .conversation-item p {
+      margin: 4px 0;
+    }
+
+    .conversation-line {
+      margin: 2px 0;
+      padding: 4px 0;
+    }
+
+    .speaker-caretaker {
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    .speaker-client {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    .error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #e74c3c;
+      font-size: 16px;
+    }
+
+    .no-conversation {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+      font-size: 16px;
+    }
+
+    .action-buttons {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      padding: 16px;
+      background: white;
+      border-top: 1px solid #ddd;
+      box-sizing: border-box;
+      gap: 16px;
+    }
+
+    .button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .back-button:hover {
+      background-color: #545b62;
+    }
+
+    .download-button {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .download-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="date">2025 3/3</div>
+    <div class="header-icons">
+      <img src="notifications.png" alt="通知" />
+      <img src="Settings.png" alt="設定" />
+      <img src="account_circle.png" alt="プロフィール" />
+    </div>
+  </div>
+
+  <div class="content-container">
+    <div class="content">
+      <div class="date-header" id="dateHeader">会話履歴</div>
+
+      <div id="loadingMessage" class="loading">会話を読み込み中...</div>
+      <div id="errorMessage" class="error" style="display: none;"></div>
+      <div id="noConversationMessage" class="no-conversation" style="display: none;">その日の会話記録がありません</div>
+
+      <div class="conversation-items" id="conversationItems" style="display: none;">
+        <!-- 動的に会話が挿入される -->
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="button back-button" onclick="goBack()">戻る</button>
+    <button class="button download-button" onclick="downloadConversation()">txt出力</button>
+  </div>
+
+  <script src="navigation.js"></script>
+  <script>
+    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
+    let currentClientId = null;
+    let selectedDate = null;
+    let conversationContent = '';
+
+    // ページ読み込み時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // ログイン状態をチェック
+      currentClientId = sessionStorage.getItem('userSerial');
+      selectedDate = sessionStorage.getItem('selectedConversationDate');
+      
+      if (!currentClientId) {
+        showError('ログインが必要です。ログインページに戻ります。');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+        return;
+      }
+
+      if (!selectedDate) {
+        showError('日付が選択されていません。');
+        setTimeout(() => {
+          window.location.href = 'calendar.html';
+        }, 2000);
+        return;
+      }
+
+      // 日付ヘッダーを更新
+      updateDateHeader();
+      
+      // 会話を読み込み
+      loadConversation();
+    });
+
+    function updateDateHeader() {
+      if (selectedDate) {
+        const [year, month, day] = selectedDate.split('-');
+        document.getElementById('dateHeader').textContent = `会話履歴 (${year}年${parseInt(month)}月${parseInt(day)}日)`;
+      }
+    }
+
+    async function loadConversation() {
+      showLoading();
+      hideError();
+      hideNoConversation();
+      hideConversationItems();
+
+      try {
+        console.log(`Trying to load conversation for: ${currentClientId}, ${selectedDate}`);
+
+        // Flask APIから会話を取得
+        const response = await fetch(`${CLOUD_RUN_URL}/conversation/${currentClientId}/${selectedDate}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // 会話を表示
+          conversationContent = data.content;
+          displayConversations(data.content);
+          showConversationItems();
+        } else if (data.not_found) {
+          // ファイルが見つからない場合
+          showNoConversation();
+        } else {
+          // その他のエラー
+          showError(data.message || '会話の読み込み中にエラーが発生しました。');
+        }
+        
+      } catch (error) {
+        console.error('Error loading conversation:', error);
+        showError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function displayConversations(content) {
+      const conversationItems = document.getElementById('conversationItems');
+      conversationItems.innerHTML = ''; // 既存の会話をクリア
+
+      if (!content || content.trim() === '') {
+        showNoConversation();
+        return;
+      }
+
+      // 会話をパース
+      const conversations = parseConversationContent(content);
+      
+      if (conversations.length === 0) {
+        showNoConversation();
+        return;
+      }
+
+      // 時間順でソート（新しい順）
+      conversations.sort((a, b) => {
+        const timeA = parseTime(a.time);
+        const timeB = parseTime(b.time);
+        return timeB - timeA; // 降順（新しい時間が上）
+      });
+
+      // 会話を表示
+      conversations.forEach(conversation => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'conversation-item';
+        
+        const contentDiv = document.createElement('div');
+        const timeDiv = document.createElement('div');
+        
+        // 会話内容を整形
+        const formattedContent = formatConversationContent(conversation);
+        contentDiv.innerHTML = formattedContent;
+        timeDiv.textContent = conversation.time;
+        
+        itemDiv.appendChild(contentDiv);
+        itemDiv.appendChild(timeDiv);
+        conversationItems.appendChild(itemDiv);
+      });
+    }
+
+    function parseConversationContent(content) {
+      const conversations = [];
+      const lines = content.split('\n');
+      let currentConversation = null;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // 時間とタイトルの行を検出（HH:MM-タイトル または HH:MM--タイトル形式）
+        const timeMatch = line.match(/^(\d{2}:\d{2})[-^]{1,2}(.+)$/);
+        if (timeMatch) {
+          // 前の会話を保存
+          if (currentConversation) {
+            conversations.push(currentConversation);
+          }
+          
+          // 新しい会話を開始
+          currentConversation = {
+            time: timeMatch[1], // 時間部分
+            title: timeMatch[2], // タイトル部分
+            content: []
+          };
+        } else if (line === '**********') {
+          // 区切り線は無視
+          continue;
+        } else if (currentConversation && line !== '') {
+          // 会話内容を追加
+          currentConversation.content.push(line);
+        }
+      }
+      
+      // 最後の会話を保存
+      if (currentConversation) {
+        conversations.push(currentConversation);
+      }
+      
+      return conversations;
+    }
+
+    function parseTime(timeString) {
+      const [hours, minutes] = timeString.split(':').map(Number);
+      return hours * 60 + minutes; // 分に変換
+    }
+
+    function formatConversationContent(conversation) {
+      if (!conversation.title && conversation.content.length === 0) {
+        return '<p>会話なし</p>';
+      }
+      
+      let formatted = `<strong>${escapeHtml(conversation.title || '会話')}</strong>`;
+      
+      conversation.content.forEach(content => {
+        // 話者を判定して色分け
+        if (content.includes('ケアトーカー：')) {
+          formatted += `<div class="conversation-line speaker-caretaker">${escapeHtml(content)}</div>`;
+        } else if (content.includes('様：')) {
+          formatted += `<div class="conversation-line speaker-client">${escapeHtml(content)}</div>`;
+        } else {
+          formatted += `<div class="conversation-line">${escapeHtml(content)}</div>`;
+        }
+      });
+      
+      return formatted;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function goBack() {
+      // セッションストレージをクリア
+      sessionStorage.removeItem('selectedConversationDate');
+      window.location.href = 'calendar.html';
+    }
+
+    function downloadConversation() {
+      if (!conversationContent) {
+        alert('ダウンロードする会話がありません。');
+        return;
+      }
+
+      if (!selectedDate) {
+        alert('日付が不明です。');
+        return;
+      }
+
+      const [year, month, day] = selectedDate.split('-');
+      const filename = `conversation_${year}-${month}-${day}.txt`;
+
+      // テキストファイルとしてダウンロード
+      const blob = new Blob([conversationContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function showLoading() {
+      document.getElementById('loadingMessage').style.display = 'block';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingMessage').style.display = 'none';
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorMessage').style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    function showNoConversation() {
+      document.getElementById('noConversationMessage').style.display = 'block';
+    }
+
+    function hideNoConversation() {
+      document.getElementById('noConversationMessage').style.display = 'none';
+    }
+
+    function showConversationItems() {
+      document.getElementById('conversationItems').style.display = 'block';
+    }
+
+    function hideConversationItems() {
+      document.getElementById('conversationItems').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
