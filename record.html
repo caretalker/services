@@ -201,13 +201,18 @@
     }
 
     function nextMonth() {
-      const now = new Date();
+      // 次月に移動する前にチェック
       const nextMonth = new Date(currentDate);
       nextMonth.setMonth(nextMonth.getMonth() + 1);
       
-      // 未来の月には移動しない
-      if (nextMonth.getFullYear() < now.getFullYear() || 
-          (nextMonth.getFullYear() === now.getFullYear() && nextMonth.getMonth() <= now.getMonth())) {
+      const now = new Date();
+      const nextYear = nextMonth.getFullYear();
+      const nextMonthNum = nextMonth.getMonth() + 1;
+      const currentYear = now.getFullYear();
+      const currentMonthNum = now.getMonth() + 1;
+      
+      // 未来の月でなければ移動を許可
+      if (nextYear < currentYear || (nextYear === currentYear && nextMonthNum <= currentMonthNum)) {
         currentDate = nextMonth;
         updateMonthDisplay();
         loadReport();
