@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>カルテ画面</title>
+  <title>レポート画面</title>
   <link rel="stylesheet" href="common.css">
+
   <style>
     .content-container {
       padding: 20px;
@@ -19,19 +20,6 @@
       width: 100%;
       max-width: 400px;
       background: #fff;
-    }
-
-    section {
-      margin-bottom: 20px;
-    }
-
-    .section-title {
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    ul {
-      padding-left: 1em;
     }
 
     .month-selector {
@@ -49,12 +37,25 @@
       font-size: 20px;
       cursor: pointer;
       padding: 4px 8px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    .month-button:hover {
+      background-color: #f0f0f0;
+    }
+
+    .month-button:disabled {
+      color: #ccc;
+      cursor: not-allowed;
     }
 
     .current-month {
       font-size: 18px;
       color: #000;
       font-weight: bold;
+      min-width: 120px;
+      text-align: center;
     }
 
     .pdf-button-wrapper {
@@ -76,6 +77,39 @@
     .pdf-button:hover {
       background-color: #333;
     }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    .error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #e74c3c;
+      font-size: 16px;
+    }
+
+    .no-report {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+      font-size: 16px;
+    }
+
+    .report-content {
+      padding: 16px 0;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background-color: #fafafa;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -89,74 +123,22 @@
   </div>
 
   <div class="month-selector">
-    <button class="month-button">＜</button>
-    <span class="current-month">2025年8月</span>
-    <button class="month-button">＞</button>
+    <button class="month-button" id="prevMonth">＜</button>
+    <span class="current-month" id="currentMonth">2025年8月</span>
+    <button class="month-button" id="nextMonth">＞</button>
   </div>
 
   <div class="content-container">
     <div class="content">
-      <p>記入日 0/0</p>
-
-      <section>
-        <div class="section-title">■ 利用者情報</div>
-        <ul>
-          <li>・名前：田中 太郎（たなか たろう）</li>
-          <li>・性別：男</li>
-          <li>・生年月日：1935年4月12日（89歳）</li>
-          <li>・ケアID：KTK000354</li>
-          <li>・担当スタッフ：山本 彩</li>
-        </ul>
-      </section>
-
-      <section>
-        <div class="section-title">■ 健康状態</div>
-        <ul>
-          <li>・既往歴：高血圧、糖尿病</li>
-          <li>・アレルギー：ペニシリン</li>
-          <li>・バイタル：</li>
-          <ul>
-            <li>− 血圧：130/85（2025/7/16）</li>
-            <li>− 体温：36.5℃</li>
-            <li>− 脈拍：72 bpm</li>
-          </ul>
-        </ul>
-      </section>
-
-      <section>
-        <div class="section-title">■ 最近のケア記録</div>
-        <ul>
-          <li>・2025/7/15 入浴介助・服薬確認（担当：山本）</li>
-          <li>・2025/7/12 食事介助（低糖質メニュー提供）</li>
-          <li>・2025/7/10 デイサービス送迎</li>
-        </ul>
-      </section>
-
-      <section>
-        <div class="section-title">■ スタッフメモ</div>
-        <ul>
-          <li>・2025/7/15：食事量が減少傾向。味の濃いものを希望。</li>
-          <li>・2025/7/10：左足に軽いむくみあり。注意して経過観察。</li>
-        </ul>
-      </section>
-
-      <section>
-        <div class="section-title">■ 添付ファイル</div>
-        <ul>
-          <li>・2025/7/15：足の写真（むくみ確認用）</li>
-          <li>・診療情報提供書（PDF）</li>
-        </ul>
-      </section>
-
-      <section>
-        <div class="section-title">■ 次回対応予定</div>
-        <ul>
-          <li>・2025/7/18 訪問リハビリ（10:00〜）</li>
-        </ul>
-      </section>
-
-      <div class="pdf-button-wrapper">
-        <a href="#" class="pdf-button">PDF出力</a>
+      <div id="loadingMessage" class="loading">レポートを読み込み中...</div>
+      <div id="errorMessage" class="error" style="display: none;"></div>
+      <div id="noReportMessage" class="no-report" style="display: none;">レポートが見つかりません</div>
+      
+      <div id="reportContent" style="display: none;">
+        <div class="report-content" id="reportText"></div>
+        <div class="pdf-button-wrapper">
+          <a href="#" class="pdf-button" onclick="downloadReport()">PDF出力</a>
+        </div>
       </div>
     </div>
   </div>
@@ -169,5 +151,167 @@
   </div>
 
   <script src="navigation.js"></script>
+  <script>
+    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
+
+    // 現在の月を管理する変数
+    let currentDate = new Date();
+    let currentClientId = null;
+
+    // ページ読み込み時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // ログイン状態をチェック
+      currentClientId = sessionStorage.getItem('userSerial');
+      
+      if (!currentClientId) {
+        showError('ログインが必要です。ログインページに戻ります。');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+        return;
+      }
+
+      // 月表示を更新
+      updateMonthDisplay();
+      
+      // レポートを読み込み
+      loadReport();
+
+      // ボタンイベントリスナーを設定
+      document.getElementById('prevMonth').addEventListener('click', previousMonth);
+      document.getElementById('nextMonth').addEventListener('click', nextMonth);
+    });
+
+    function updateMonthDisplay() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      document.getElementById('currentMonth').textContent = `${year}年${month}月`;
+      
+      // 未来の月への移動を制限
+      const now = new Date();
+      const isCurrentOrFutureMonth = (year > now.getFullYear()) || 
+                                   (year === now.getFullYear() && month > now.getMonth() + 1);
+      document.getElementById('nextMonth').disabled = isCurrentOrFutureMonth;
+    }
+
+    function previousMonth() {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      updateMonthDisplay();
+      loadReport();
+    }
+
+    function nextMonth() {
+      const now = new Date();
+      const nextMonth = new Date(currentDate);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      
+      // 未来の月には移動しない
+      if (nextMonth.getFullYear() < now.getFullYear() || 
+          (nextMonth.getFullYear() === now.getFullYear() && nextMonth.getMonth() <= now.getMonth())) {
+        currentDate = nextMonth;
+        updateMonthDisplay();
+        loadReport();
+      }
+    }
+
+    async function loadReport() {
+      showLoading();
+      hideError();
+      hideNoReport();
+      hideReportContent();
+
+      try {
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const yearMonth = `${year}-${month}`;
+
+        console.log(`Trying to load report for: ${currentClientId}, ${yearMonth}`);
+
+        // Flask APIからレポートを取得
+        const response = await fetch(`${CLOUD_RUN_URL}/report/${currentClientId}/${yearMonth}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // レポートを表示
+          document.getElementById('reportText').textContent = data.content;
+          showReportContent();
+        } else if (data.not_found) {
+          // ファイルが見つからない場合
+          showNoReport();
+        } else {
+          // その他のエラー
+          showError(data.message || 'レポートの読み込み中にエラーが発生しました。');
+        }
+        
+      } catch (error) {
+        console.error('Error loading report:', error);
+        showError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function showLoading() {
+      document.getElementById('loadingMessage').style.display = 'block';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingMessage').style.display = 'none';
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorMessage').style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    function showNoReport() {
+      document.getElementById('noReportMessage').style.display = 'block';
+    }
+
+    function hideNoReport() {
+      document.getElementById('noReportMessage').style.display = 'none';
+    }
+
+    function showReportContent() {
+      document.getElementById('reportContent').style.display = 'block';
+    }
+
+    function hideReportContent() {
+      document.getElementById('reportContent').style.display = 'none';
+    }
+
+    function downloadReport() {
+      const reportText = document.getElementById('reportText').textContent;
+      if (!reportText) {
+        alert('ダウンロードするレポートがありません。');
+        return;
+      }
+
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const filename = `report_${year}-${month}.txt`;
+
+      // テキストファイルとしてダウンロード
+      const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
 </body>
 </html>
