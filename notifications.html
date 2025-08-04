@@ -6,30 +6,6 @@
   <title>通知画面</title>
   <link rel="stylesheet" href="common.css">
   <style>
-    .notification-tabs {
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-      background: #fafafa;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .notification-tabs button {
-      flex: 1;
-      background: none;
-      border: none;
-      padding: 8px;
-      font-size: 16px;
-      color: #666;
-      cursor: pointer;
-    }
-
-    .notification-tabs button.active {
-      border-bottom: 2px solid #4285f4;
-      color: #4285f4;
-      font-weight: bold;
-    }
-
     .notifications {
       padding: 16px;
       overflow-y: auto;
@@ -56,24 +32,33 @@
 
     .notification-card.unread {
       background: #fff8f2;
+      border-left: 4px solid #ff9800;
+    }
+
+    .notification-card.read {
+      background: #f9f9f9;
     }
 
     .card-title {
       font-size: 16px;
       font-weight: bold;
       margin-bottom: 4px;
+      color: #333;
     }
 
     .card-summary {
       font-size: 14px;
       color: #555;
       margin-bottom: 6px;
+      line-height: 1.4;
+      white-space: pre-wrap;
     }
 
     .card-time {
       font-size: 12px;
       color: #999;
       text-align: right;
+      margin-bottom: 8px;
     }
 
     .card-actions {
@@ -88,8 +73,89 @@
       padding: 6px 12px;
       border-radius: 6px;
       border: none;
-      background: #eee;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .mark-read {
+      background: #4caf50;
+      color: white;
+    }
+
+    .mark-read:hover {
+      background: #45a049;
+    }
+
+    .delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .delete:hover {
+      background: #da190b;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    .error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #e74c3c;
+      font-size: 16px;
+      background-color: #ffeaea;
+      border-radius: 8px;
+      margin: 16px;
+    }
+
+    .no-notifications {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+      font-size: 16px;
+    }
+
+    .refresh-button {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      font-size: 16px;
+      z-index: 100;
+    }
+
+    .refresh-button:hover {
+      background: #1976D2;
+    }
+
+    .notification-status {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+
+    .status-unread {
+      background: #ff9800;
+      color: white;
+    }
+
+    .status-read {
+      background: #9e9e9e;
+      color: white;
     }
   </style>
 </head>
@@ -103,52 +169,14 @@
     </div>
   </div>
 
-  <div class="notification-tabs">
-    <button class="active">すべて</button>
-    <button>重要</button>
-    <button>未読</button>
-  </div>
+  <button class="refresh-button" onclick="loadNotifications()" title="更新">⟳</button>
 
-  <div class="notifications">
-    <h3 class="date-heading">今日</h3>
+  <div id="loadingMessage" class="loading">通知を読み込み中...</div>
+  <div id="errorMessage" class="error" style="display: none;"></div>
+  <div id="noNotificationsMessage" class="no-notifications" style="display: none;">通知がありません</div>
 
-    <div class="notification-card unread">
-      <h4 class="card-title">服薬時間のお知らせ</h4>
-      <p class="card-summary">○○さんは14:00に薬を服用する予定です。</p>
-      <div class="card-time">14:00</div>
-      <div class="card-actions">
-        <button class="mark-read">既読にする</button>
-        <button class="delete">削除</button>
-      </div>
-    </div>
-
-    <div class="notification-card unread">
-      <h4 class="card-title">介護予定の変更</h4>
-      <p class="card-summary">担当者が△△さんに変更されました。</p>
-      <div class="card-time">09:30</div>
-      <div class="card-actions">
-        <button class="mark-read">既読にする</button>
-        <button class="delete">削除</button>
-      </div>
-    </div>
-
-    <div class="notification-card">
-      <h4 class="card-title">服薬時間のお知らせ</h4>
-      <p class="card-summary">○○さんは14:00に薬を服用する予定です。</p>
-      <div class="card-time">14:00</div>
-      <div class="card-actions">
-        <button class="delete">削除</button>
-      </div>
-    </div>
-
-    <div class="notification-card">
-      <h4 class="card-title">介護予定の変更</h4>
-      <p class="card-summary">担当者が△△さんに変更されました。</p>
-      <div class="card-time">09:30</div>
-      <div class="card-actions">
-        <button class="delete">削除</button>
-      </div>
-    </div>
+  <div class="notifications" id="notificationsContainer" style="display: none;">
+    <!-- 動的に通知が挿入される -->
   </div>
 
   <div class="footer">
@@ -159,5 +187,301 @@
   </div>
 
   <script src="navigation.js"></script>
+  <script>
+    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
+    let currentClientId = null;
+    let allNotifications = [];
+
+    // ページ読み込み時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // ログイン状態をチェック
+      currentClientId = sessionStorage.getItem('userSerial');
+      
+      if (!currentClientId) {
+        showError('ログインが必要です。ログインページに戻ります。');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+        return;
+      }
+
+      // 通知を読み込み
+      loadNotifications();
+    });
+
+    async function loadNotifications() {
+      showLoading();
+      hideError();
+      hideNoNotifications();
+      hideNotificationsContainer();
+
+      try {
+        console.log(`Loading notifications for client_id: ${currentClientId}`);
+
+        // Flask APIから通知を取得
+        const response = await fetch(`${CLOUD_RUN_URL}/notifications/${currentClientId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          allNotifications = data.notifications || [];
+          displayNotifications(allNotifications);
+          
+          if (allNotifications.length === 0) {
+            showNoNotifications();
+          } else {
+            showNotificationsContainer();
+          }
+        } else {
+          showError(data.message || '通知の読み込み中にエラーが発生しました。');
+        }
+        
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+        showError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function displayNotifications(notifications) {
+      const container = document.getElementById('notificationsContainer');
+      container.innerHTML = ''; // 既存の通知をクリア
+
+      if (notifications.length === 0) {
+        return;
+      }
+
+      // 日付ごとにグループ化
+      const groupedNotifications = groupNotificationsByDate(notifications);
+      
+      // 日付順でソート（新しい順）
+      const sortedDates = Object.keys(groupedNotifications).sort((a, b) => new Date(b) - new Date(a));
+
+      sortedDates.forEach(date => {
+        // 日付ヘッダーを作成
+        const dateHeader = document.createElement('h3');
+        dateHeader.className = 'date-heading';
+        dateHeader.textContent = formatDateHeader(date);
+        container.appendChild(dateHeader);
+
+        // その日の通知を表示
+        const dayNotifications = groupedNotifications[date];
+        dayNotifications.forEach(notification => {
+          const notificationElement = createNotificationElement(notification);
+          container.appendChild(notificationElement);
+        });
+      });
+    }
+
+    function groupNotificationsByDate(notifications) {
+      const grouped = {};
+      
+      notifications.forEach(notification => {
+        const date = notification.datetime.split('T')[0]; // YYYY-MM-DD部分を取得
+        
+        if (!grouped[date]) {
+          grouped[date] = [];
+        }
+        
+        grouped[date].push(notification);
+      });
+      
+      // 各日付内でも時間順にソート（新しい順）
+      Object.keys(grouped).forEach(date => {
+        grouped[date].sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+      });
+      
+      return grouped;
+    }
+
+    function formatDateHeader(dateString) {
+      const date = new Date(dateString);
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      // 今日、昨日の判定
+      if (dateString === today.toISOString().split('T')[0]) {
+        return '今日';
+      } else if (dateString === yesterday.toISOString().split('T')[0]) {
+        return '昨日';
+      } else {
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return `${year}年${month}月${day}日`;
+      }
+    }
+
+    function createNotificationElement(notification) {
+      const card = document.createElement('div');
+      card.className = `notification-card ${notification.status === 1 ? 'unread' : 'read'}`;
+      card.dataset.notificationId = notification.id;
+
+      const title = document.createElement('h4');
+      title.className = 'card-title';
+      title.innerHTML = `${escapeHtml(notification.title)}` + 
+        `<span class="notification-status status-${notification.status === 1 ? 'unread' : 'read'}">` +
+        `${notification.status === 1 ? '未読' : '既読'}</span>`;
+
+      const summary = document.createElement('p');
+      summary.className = 'card-summary';
+      summary.textContent = notification.message;
+
+      const time = document.createElement('div');
+      time.className = 'card-time';
+      time.textContent = notification.display_time;
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      // 未読の場合は既読ボタンを表示
+      if (notification.status === 1) {
+        const markReadButton = document.createElement('button');
+        markReadButton.className = 'mark-read';
+        markReadButton.textContent = '既読にする';
+        markReadButton.onclick = () => markNotificationAsRead(notification.id);
+        actions.appendChild(markReadButton);
+      }
+
+      // 削除ボタン
+      const deleteButton = document.createElement('button');
+      deleteButton.className = 'delete';
+      deleteButton.textContent = '削除';
+      deleteButton.onclick = () => deleteNotification(notification.id);
+      actions.appendChild(deleteButton);
+
+      card.appendChild(title);
+      card.appendChild(summary);
+      card.appendChild(time);
+      card.appendChild(actions);
+
+      return card;
+    }
+
+    async function markNotificationAsRead(notificationId) {
+      try {
+        console.log(`Marking notification as read: ${notificationId}`);
+
+        const response = await fetch(`${CLOUD_RUN_URL}/notifications/${currentClientId}/mark-read`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            notification_id: notificationId
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // ローカルデータを更新
+          const notification = allNotifications.find(n => n.id === notificationId);
+          if (notification) {
+            notification.status = 0; // 既読
+          }
+          
+          // 表示を更新
+          displayNotifications(allNotifications);
+          
+          // 簡単な成功メッセージ（オプション）
+          console.log('通知を既読にしました');
+        } else {
+          alert(data.message || '既読処理に失敗しました');
+        }
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+        alert('ネットワークエラーが発生しました');
+      }
+    }
+
+    async function deleteNotification(notificationId) {
+      if (!confirm('この通知を削除しますか？')) {
+        return;
+      }
+
+      try {
+        console.log(`Deleting notification: ${notificationId}`);
+
+        const response = await fetch(`${CLOUD_RUN_URL}/notifications/${currentClientId}/delete`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            notification_id: notificationId
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // ローカルデータから削除
+          allNotifications = allNotifications.filter(n => n.id !== notificationId);
+          
+          // 表示を更新
+          if (allNotifications.length === 0) {
+            showNoNotifications();
+            hideNotificationsContainer();
+          } else {
+            displayNotifications(allNotifications);
+          }
+          
+          console.log('通知を削除しました');
+        } else {
+          alert(data.message || '削除処理に失敗しました');
+        }
+      } catch (error) {
+        console.error('Error deleting notification:', error);
+        alert('ネットワークエラーが発生しました');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showLoading() {
+      document.getElementById('loadingMessage').style.display = 'block';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingMessage').style.display = 'none';
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorMessage').style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    function showNoNotifications() {
+      document.getElementById('noNotificationsMessage').style.display = 'block';
+    }
+
+    function hideNoNotifications() {
+      document.getElementById('noNotificationsMessage').style.display = 'none';
+    }
+
+    function showNotificationsContainer() {
+      document.getElementById('notificationsContainer').style.display = 'block';
+    }
+
+    function hideNotificationsContainer() {
+      document.getElementById('notificationsContainer').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
