@@ -99,23 +99,16 @@
     .calendar-day.unavailable {
       color: #ccc;
       cursor: not-allowed;
-      background-color: #f8f8f8;
     }
 
     .calendar-day.unavailable:hover {
-      background-color: #f8f8f8;
+      background-color: transparent;
     }
 
-    .calendar-day.selected {
-      background-color: #007bff;
+    .selected {
+      background-color: #999;
       color: #fff;
       border-radius: 6px;
-    }
-
-    .calendar-day.available {
-      background-color: #e8f4fd;
-      color: #007bff;
-      font-weight: bold;
     }
 
     .ok-button {
@@ -125,19 +118,19 @@
     }
 
     .ok-button button {
-      background-color: #007bff;
-      color: white;
+      background-color: #ccc;
+      color: #333;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
-      padding: 8px 16px;
+      padding: 8px 12px;
       transition: background-color 0.2s ease;
       display: none;
     }
 
     .ok-button button:hover {
-      background-color: #0056b3;
+      background-color: #ddd;
     }
 
     .ok-button button.visible {
@@ -386,11 +379,9 @@
         const day = parseInt(cell.textContent);
         
         if (availableDays.includes(day)) {
-          cell.classList.add('available');
           cell.classList.remove('unavailable');
         } else {
           cell.classList.add('unavailable');
-          cell.classList.remove('available');
         }
       });
     }
