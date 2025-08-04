@@ -32,6 +32,37 @@
     .item p {
       margin: 4px 0;
     }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    .error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #e74c3c;
+      font-size: 16px;
+    }
+
+    .no-record {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+      font-size: 16px;
+    }
+
+    .date-header {
+      text-align: center;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -44,45 +75,14 @@
     </div>
   </div>
 
-  <div class="items">
-    <div class="item">
-      <div>
-        <strong>2025/03/03 動作記録</strong>
-        <p>午前8時、起床後すぐに洗面所へ移動。いつもより歩行速度がゆっくり。</p>
-        <p>声かけに反応あり。天気について話しかけると笑顔を見せた。</p>
-        <p>着替えは自分で行い、時間はかかったがスムーズだった。</p>
-      </div>
-      <div>08:00</div>
-    </div>
+  <div class="date-header" id="dateHeader">今日の記録</div>
 
-    <div class="item">
-      <div>
-        <strong>2025/03/02 動作記録</strong>
-        <p>朝食時、食欲はやや低下気味。パンを半分ほど残す。</p>
-        <p>会話には参加せず、うつむきがちだった。</p>
-        <p>食後はすぐに居室に戻るが、表情は落ち着いていた。</p>
-      </div>
-      <div>08:30</div>
-    </div>
-    
-    <div class="item">
-      <div>
-        <strong>2025/03/01 動作記録</strong>
-        <p>午前中はデイサービスに参加。リハビリ体操に積極的に取り組む。</p>
-        <p>昼食は完食。スタッフとの会話も弾んでいた。</p>
-        <p>午後は読書をして過ごし、リラックスした様子。</p>
-      </div>
-      <div>13:00</div>
-    </div>
+  <div id="loadingMessage" class="loading">今日の記録を読み込み中...</div>
+  <div id="errorMessage" class="error" style="display: none;"></div>
+  <div id="noRecordMessage" class="no-record" style="display: none;">今日の記録がありません</div>
 
-    <div class="item">
-      <div>
-        <strong>2025/02/28 服薬記録</strong>
-        <p>朝の降圧剤を予定通り服用。水分摂取も十分。</p>
-        <p>血圧測定：125/80 正常範囲内。</p>
-      </div>
-      <div>09:00</div>
-    </div>
+  <div class="items" id="recordItems" style="display: none;">
+    <!-- 動的に記録が挿入される -->
   </div>
 
   <div class="footer">
@@ -93,5 +93,220 @@
   </div>
 
   <script src="navigation.js"></script>
+  <script>
+    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
+    let currentClientId = null;
+
+    // ページ読み込み時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // ログイン状態をチェック
+      currentClientId = sessionStorage.getItem('userSerial');
+      
+      if (!currentClientId) {
+        showError('ログインが必要です。ログインページに戻ります。');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+        return;
+      }
+
+      // 今日の日付を表示
+      updateDateHeader();
+      
+      // 今日の記録を読み込み
+      loadTodayRecord();
+    });
+
+    function updateDateHeader() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1;
+      const day = today.getDate();
+      
+      document.getElementById('dateHeader').textContent = `今日の記録 (${year}年${month}月${day}日)`;
+    }
+
+    async function loadTodayRecord() {
+      showLoading();
+      hideError();
+      hideNoRecord();
+      hideRecordItems();
+
+      try {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+
+        console.log(`Trying to load daily record for: ${currentClientId}, ${dateString}`);
+
+        // Flask APIから今日の記録を取得
+        const response = await fetch(`${CLOUD_RUN_URL}/daily-record/${currentClientId}/${dateString}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // 記録を表示
+          displayRecords(data.content);
+          showRecordItems();
+        } else if (data.not_found) {
+          // ファイルが見つからない場合
+          showNoRecord();
+        } else {
+          // その他のエラー
+          showError(data.message || '記録の読み込み中にエラーが発生しました。');
+        }
+        
+      } catch (error) {
+        console.error('Error loading daily record:', error);
+        showError('ネットワークエラーが発生しました。インターネット接続を確認してください。');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function displayRecords(content) {
+      const recordItems = document.getElementById('recordItems');
+      recordItems.innerHTML = ''; // 既存の記録をクリア
+
+      if (!content || content.trim() === '') {
+        showNoRecord();
+        return;
+      }
+
+      // 記録をパース
+      const records = parseRecordContent(content);
+      
+      if (records.length === 0) {
+        showNoRecord();
+        return;
+      }
+
+      // 時間順でソート（新しい順）
+      records.sort((a, b) => {
+        const timeA = parseTime(a.time);
+        const timeB = parseTime(b.time);
+        return timeB - timeA; // 降順（新しい時間が上）
+      });
+
+      // 記録を表示
+      records.forEach(record => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item';
+        
+        const contentDiv = document.createElement('div');
+        const timeDiv = document.createElement('div');
+        
+        // 記録内容を整形
+        const formattedContent = formatRecordContent(record.content);
+        contentDiv.innerHTML = formattedContent;
+        timeDiv.textContent = record.time;
+        
+        itemDiv.appendChild(contentDiv);
+        itemDiv.appendChild(timeDiv);
+        recordItems.appendChild(itemDiv);
+      });
+    }
+
+    function parseRecordContent(content) {
+      const records = [];
+      const lines = content.split('\n');
+      let currentRecord = null;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // 時間の行を検出（HH:MM形式）
+        if (/^\d{2}:\d{2}$/.test(line)) {
+          // 前の記録を保存
+          if (currentRecord) {
+            records.push(currentRecord);
+          }
+          
+          // 新しい記録を開始
+          currentRecord = {
+            time: line,
+            content: []
+          };
+        } else if (line === '**********') {
+          // 区切り線は無視
+          continue;
+        } else if (currentRecord && line !== '') {
+          // 記録内容を追加
+          currentRecord.content.push(line);
+        }
+      }
+      
+      // 最後の記録を保存
+      if (currentRecord) {
+        records.push(currentRecord);
+      }
+      
+      return records;
+    }
+
+    function parseTime(timeString) {
+      const [hours, minutes] = timeString.split(':').map(Number);
+      return hours * 60 + minutes; // 分に変換
+    }
+
+    function formatRecordContent(contentArray) {
+      if (contentArray.length === 0) {
+        return '<p>記録なし</p>';
+      }
+      
+      let formatted = '<strong>記録</strong>';
+      contentArray.forEach(content => {
+        formatted += `<p>${escapeHtml(content)}</p>`;
+      });
+      
+      return formatted;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showLoading() {
+      document.getElementById('loadingMessage').style.display = 'block';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingMessage').style.display = 'none';
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorMessage').style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    function showNoRecord() {
+      document.getElementById('noRecordMessage').style.display = 'block';
+    }
+
+    function hideNoRecord() {
+      document.getElementById('noRecordMessage').style.display = 'none';
+    }
+
+    function showRecordItems() {
+      document.getElementById('recordItems').style.display = 'block';
+    }
+
+    function hideRecordItems() {
+      document.getElementById('recordItems').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
