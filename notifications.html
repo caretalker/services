@@ -226,18 +226,27 @@
           }
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response headers:', [...response.headers.entries()]);
+
         const data = await response.json();
+        console.log('Response data:', data);
 
         if (response.ok && data.success) {
           allNotifications = data.notifications || [];
+          console.log(`Loaded ${allNotifications.length} notifications:`, allNotifications);
+          
           displayNotifications(allNotifications);
           
           if (allNotifications.length === 0) {
+            console.log('No notifications found, showing no notifications message');
             showNoNotifications();
           } else {
+            console.log(`Displaying ${allNotifications.length} notifications`);
             showNotificationsContainer();
           }
         } else {
+          console.error('API error:', data);
           showError(data.message || '通知の読み込み中にエラーが発生しました。');
         }
         
