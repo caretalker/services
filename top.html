@@ -204,7 +204,7 @@
         const timeDiv = document.createElement('div');
         
         // 記録内容を整形
-        const formattedContent = formatRecordContent(record.content);
+        const formattedContent = formatRecordContent(record);
         contentDiv.innerHTML = formattedContent;
         timeDiv.textContent = record.time;
         
@@ -222,8 +222,9 @@
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
         
-        // 時間の行を検出（HH:MM形式）
-        if (/^\d{2}:\d{2}$/.test(line)) {
+        // 時間とタイトルの行を検出（HH:MM-タイトル または HH:MM^^タイトル形式）
+        const timeMatch = line.match(/^(\d{2}:\d{2})[-^]{1,2}(.+)$/);
+        if (timeMatch) {
           // 前の記録を保存
           if (currentRecord) {
             records.push(currentRecord);
@@ -231,7 +232,8 @@
           
           // 新しい記録を開始
           currentRecord = {
-            time: line,
+            time: timeMatch[1], // 時間部分
+            title: timeMatch[2], // タイトル部分
             content: []
           };
         } else if (line === '**********') {
@@ -256,13 +258,13 @@
       return hours * 60 + minutes; // 分に変換
     }
 
-    function formatRecordContent(contentArray) {
-      if (contentArray.length === 0) {
+    function formatRecordContent(record) {
+      if (!record.title && record.content.length === 0) {
         return '<p>記録なし</p>';
       }
       
-      let formatted = '<strong>記録</strong>';
-      contentArray.forEach(content => {
+      let formatted = `<strong>${escapeHtml(record.title || '記録')}</strong>`;
+      record.content.forEach(content => {
         formatted += `<p>${escapeHtml(content)}</p>`;
       });
       
