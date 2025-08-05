@@ -7,72 +7,137 @@
   <link rel="stylesheet" href="common.css">
   <style>
     body {
+      font-family: "Helvetica Neue", "メイリオ", sans-serif;
       background: #fff;
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    .main-content {
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 16px;
-      margin-bottom: 100px;
-      max-width: 600px;
-      background: #fff;
+      border-bottom: 1px solid #aaa;
+      background: #f5f5f5;
+      max-width: 480px;
+      width: 100%;
       margin-left: auto;
       margin-right: auto;
     }
+
+    .header .date {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .header-icons {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .header-icons img {
+      width: 36px;
+      height: 36px;
+      margin-left: 24px;
+    }
+
+    .main-content, .items {
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: 160px;
+      background-color: #fff;
+      box-sizing: border-box;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+
+    .footer img {
+      width: 28px;
+      height: 28px;
+    }
+
     h1 {
       text-align: center;
       font-size: 22px;
       margin-bottom: 24px;
     }
+
     .item {
       margin-bottom: 16px;
     }
+
     .item label {
       display: block;
       font-weight: bold;
       margin-bottom: 4px;
     }
+
     .item input,
     .item select,
     .item textarea {
       width: 100%;
       padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
       font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
       box-sizing: border-box;
     }
+
     .item textarea {
-      min-height: 60px;
       resize: vertical;
+      min-height: 60px;
     }
+
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 4px;
     }
+
     .checkbox-item {
       display: flex;
       align-items: center;
       gap: 4px;
     }
+
     .checkbox-item input[type="checkbox"] {
-      width: auto;
       margin: 0;
     }
+
     .buttons {
       position: fixed;
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 100%;
-      max-width: 480px;
       display: flex;
       justify-content: space-between;
       padding: 16px;
-      background: white;
-      border-top: 1px solid #ddd;
+      background-color: #fff;
+      width: 100%;
+      max-width: 480px;
       box-sizing: border-box;
+      border-top: 1px solid #ddd;
     }
+
     .button {
       flex: 1;
       margin: 0 8px;
@@ -82,43 +147,29 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
     .cancel-button {
       background-color: #6c757d;
       color: white;
     }
+
     .cancel-button:hover {
       background-color: #5a6268;
     }
+
     .submit-button {
       background-color: #007bff;
       color: white;
     }
+
     .submit-button:hover {
       background-color: #0056b3;
     }
+
     .loading {
       text-align: center;
       padding: 20px;
       color: #666;
-    }
-    .header-icons img {
-      width: 36px;
-      height: 36px;
-    }
-    .header-icons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    }
-    .header {
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    }
-    .main-content {
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
     }
   </style>
 </head>
@@ -271,31 +322,55 @@
     const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
 
     document.addEventListener('DOMContentLoaded', function() {
-      // ダミーデータでフォームを表示
-      const dummyData = {
-        lastName: "山田",
-        firstName: "太郎",
-        lastNameKana: "ヤマダ",
-        firstNameKana: "タロウ",
-        age: 76,
-        gender: "男性",
-        address: "東京都新宿区",
-        familyAddress: "東京都杉並区",
-        emergency: "090-1234-5678",
-        medication: "降圧剤",
-        medicationFreq: "毎朝1回",
-        illness: "高血圧",
-        allergy: "なし",
-        hobby: "囲碁",
-        destination: "スーパー",
-        trashDays: "月・木",
-        dayServiceFreq: "週2回",
-        otherInfo: "毎週火曜は通院"
-      };
-      populateForm(dummyData);
-      document.getElementById('loadingMessage').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'block';
+      loadProfileData();
     });
+
+    function loadProfileData() {
+      // セッションストレージからプロフィールデータを取得
+      const profileDataStr = sessionStorage.getItem('profileData');
+      
+      if (profileDataStr) {
+        const profileData = JSON.parse(profileDataStr);
+        populateForm(profileData);
+        document.getElementById('loadingMessage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+      } else {
+        // プロフィールデータがない場合はAPIから取得
+        fetchProfileData();
+      }
+    }
+
+    async function fetchProfileData() {
+      try {
+        const clientId = sessionStorage.getItem('userSerial');
+        
+        if (!clientId) {
+          alert('ログインが必要です。');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        const response = await fetch(`${CLOUD_RUN_URL}/profile/${clientId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          populateForm(data.data);
+          document.getElementById('loadingMessage').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+        } else {
+          alert('プロフィールデータの取得に失敗しました: ' + (data.message || ''));
+        }
+      } catch (error) {
+        console.error('Profile fetch error:', error);
+        alert('ネットワークエラーが発生しました。');
+      }
+    }
 
     function populateForm(data) {
       document.getElementById('lastName').value = data.lastName || '';
