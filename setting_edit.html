@@ -340,37 +340,78 @@
       }
     }
 
-    async function fetchProfileData() {
-      try {
-        const clientId = sessionStorage.getItem('userSerial');
-        
-        if (!clientId) {
-          alert('ログインが必要です。');
-          window.location.href = 'index.html';
-          return;
-        }
-
-        const response = await fetch(`${CLOUD_RUN_URL}/profile/${clientId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          populateForm(data.data);
-          document.getElementById('loadingMessage').style.display = 'none';
-          document.getElementById('mainContent').style.display = 'block';
-        } else {
-          alert('プロフィールデータの取得に失敗しました: ' + (data.message || ''));
-        }
-      } catch (error) {
-        console.error('Profile fetch error:', error);
-        alert('ネットワークエラーが発生しました。');
-      }
+    // ...existing code...
+async function saveAndReturn() {
+  try {
+    const clientId = sessionStorage.getItem('userSerial');
+    
+    if (!clientId) {
+      alert('ログインが必要です。');
+      window.location.href = 'index.html';
+      return;
     }
+
+    // フォームの入力値を取得
+    const formData = new FormData(document.getElementById('profileForm'));
+    
+    // ゴミ出し日のチェックボックスを処理
+    const trashDays = [];
+    document.querySelectorAll('input[name="trashDays"]:checked').forEach(checkbox => {
+      trashDays.push(checkbox.value);
+    });
+    
+    // 服薬頻度の処理
+    let medicationFreq = formData.get('medicationFreq');
+    if (medicationFreq === 'その他') {
+      medicationFreq = formData.get('medicationFreqOther');
+    }
+
+    // 保存データの準備
+    const saveData = {
+      lastName: formData.get('lastName'),
+      firstName: formData.get('firstName'),
+      lastNameKana: formData.get('lastNameKana'),
+      firstNameKana: formData.get('firstNameKana'),
+      age: formData.get('age'),
+      gender: formData.get('gender'),
+      address: formData.get('address'),
+      familyAddress: formData.get('familyAddress'),
+      emergency: formData.get('emergency'),
+      medication: formData.get('medication'),
+      medicationFreq: medicationFreq,
+      illness: formData.get('illness'),
+      allergy: formData.get('allergy'),
+      hobby: formData.get('hobby'),
+      destination: formData.get('destination'),
+      trashDays: trashDays.join('・'),
+      dayServiceFreq: formData.get('dayServiceFreq'),
+      otherInfo: formData.get('otherInfo')
+    };
+
+    // APIでプロフィールを更新
+    const response = await fetch(`${CLOUD_RUN_URL}/profile/${clientId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(saveData)
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      alert('プロフィールを保存しました');
+      sessionStorage.removeItem('profileData');
+      window.location.href = 'settings.html';
+    } else {
+      alert('保存に失敗しました: ' + (data.message || ''));
+    }
+  } catch (error) {
+    console.error('Save error:', error);
+    alert('ネットワークエラーが発生しました。');
+  }
+}
+// ...existing code...
 
     function populateForm(data) {
       document.getElementById('lastName').value = data.lastName || '';
