@@ -452,18 +452,6 @@ async function saveAndReturn() {
       document.getElementById('otherInfo').value = data.otherInfo || '';
     }
 
-    function toggleOtherMedicationInput() {
-      const select = document.getElementById('medicationFreq');
-      const otherInput = document.getElementById('medicationFreqOther');
-      if (select.value === 'その他') {
-        otherInput.style.display = 'block';
-        otherInput.required = true;
-      } else {
-        otherInput.style.display = 'none';
-        otherInput.required = false;
-        otherInput.value = '';
-      }
-    }
 
     async function saveAndReturn() {
       // 保存処理は元のまま
