@@ -124,22 +124,26 @@
     .refresh-button-wrapper {
       display: flex;
       justify-content: flex-end;
-      padding: 8px 16px 0;
+      padding: 10px 20px;
     }
 
-    /* ボタンのデザイン：背景なし、シンプルなアイコン */
     .refresh-button {
-      background: none;
-      color: #2196F3;
+      width: 40px;
+      height: 40px;
+      background-color: gray;
       border: none;
-      font-size: 24px;
+      border-radius: 50%;
+      color: white;
+      font-size: 20px;
       cursor: pointer;
-      padding: 4px 8px;
-      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
     }
 
     .refresh-button:hover {
-      color: #1565c0;
+      background-color: #666;
     }
 
     .notification-status {
@@ -186,10 +190,9 @@
     </div>
   </div>
 
-  <div class="icon-refresh-wrapper">
-    <button class="refresh-button" onclick="loadNotifications()" title="更新">⟳</button>
-    <div class="icon-circle"></div>
-  </div>
+<div class="refresh-button-wrapper">
+  <button class="refresh-button" onclick="loadNotifications()" title="更新">⟳</button>
+</div>
 
   <div id="loadingMessage" class="loading">通知を読み込み中...</div>
   <div id="errorMessage" class="error" style="display: none;"></div>
