@@ -128,18 +128,22 @@
     }
 
     .refresh-button {
-      width: 40px;
-      height: 40px;
-      background-color: gray;
-      border: none;
-      border-radius: 50%;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color 0.3s;
+        width: 40px;
+        height: 40px;
+        background-color: gray;
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 20px;
+        font-family: "Arial", sans-serif; /* 文字のズレを抑える */
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;             /* 余分な余白を除去 */
+        line-height: 1;         /* 行の高さでズレるのを防ぐ */
+        vertical-align: middle; /* 上下中央揃えの保険 */
+        transition: background-color 0.3s;
     }
 
     .refresh-button:hover {
