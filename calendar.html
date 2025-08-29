@@ -3,9 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>会話履歴</title>
-  <link rel="stylesheet" href="common.css">
+  <title>会話履歴 - デモ</title>
   <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", "メイリオ", sans-serif;
+      background: #fff;
+      max-width: 480px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .demo-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 16px;
+      font-size: 12px;
+      text-align: center;
+      margin: 0;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #aaa;
+      height: 64px;
+      background: #f5f5f5;
+      box-sizing: border-box;
+    }
+
+    .date {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .header-icons {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-icons img {
+      width: 36px;
+      height: 36px;
+      margin-left: 24px;
+      cursor: pointer;
+    }
+
     .calendar-container {
       padding: 20px;
       flex: 1;
@@ -44,7 +91,7 @@
     }
 
     .arrow-button:hover {
-      background-color: #f5f5f5;
+      background-color: #e5e5e5;
       color: #999;
     }
 
@@ -75,9 +122,19 @@
       background-color: transparent;
     }
 
+    .calendar-day.available {
+      background-color: #e3f2fd;
+      color: #1976d2;
+      font-weight: bold;
+    }
+
+    .calendar-day.available:hover {
+      background-color: #bbdefb;
+    }
+
     .selected {
-      background-color: #999;
-      color: #fff;
+      background-color: #999 !important;
+      color: #fff !important;
       border-radius: 6px;
     }
 
@@ -107,120 +164,156 @@
       display: block;
     }
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #666;
-      font-size: 14px;
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+      z-index: 10;
     }
 
-    .error {
-      text-align: center;
-      padding: 20px;
-      color: #e74c3c;
-      font-size: 14px;
+    .footer img {
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+    }
+
+    /* レスポンシブデザイン */
+    @media (max-width: 480px) {
+      .header {
+        padding: 12px;
+        height: 56px;
+      }
+      
+      .date {
+        font-size: 16px;
+      }
+      
+      .header-icons img {
+        width: 32px;
+        height: 32px;
+        margin-left: 16px;
+      }
+      
+      .calendar-container {
+        padding: 16px;
+      }
+      
+      .calendar-header span {
+        margin: 0 8px;
+        font-size: 16px;
+      }
+      
+      .arrow-button {
+        padding: 4px 8px;
+        font-size: 14px;
+      }
+      
+      .calendar-day {
+        padding: 8px;
+        font-size: 14px;
+      }
+      
+      .footer img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    @media (min-width: 481px) and (max-width: 768px) {
+      .calendar-body-wrapper {
+        max-width: 500px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="demo-banner">
+    🚀 デモモード - サンプルデータを表示しています
+  </div>
+
   <div class="header">
     <div class="date">2025 3/3</div>
     <div class="header-icons">
-      <img src="notifications.png" alt="通知" />
-      <img src="Settings.png" alt="設定" />
-      <img src="account_circle.png" alt="プロフィール" />
+      <img src="notifications.png" alt="通知" onclick="navigateTo('demo_notifications.html')" />
+      <img src="Settings.png" alt="設定" onclick="navigateTo('demo_settings.html')" />
+      <img src="account_circle.png" alt="プロフィール" onclick="navigateTo('demo_account.html')" />
     </div>
   </div>
 
   <div class="calendar-container">
     <div class="calendar-body-wrapper">
-      <div id="loadingMessage" class="loading">会話履歴の可用性を確認中...</div>
-      <div id="errorMessage" class="error" style="display: none;"></div>
+      <div class="calendar-header">
+        <button class="arrow-button" id="prevMonth">&lt;</button>
+        <span id="monthDisplay">3月</span>
+        <button class="arrow-button" id="nextMonth">&gt;</button>
+        <button class="arrow-button" id="prevYear">&lt;</button>
+        <span id="yearDisplay">2025</span>
+        <button class="arrow-button" id="nextYear">&gt;</button>
+      </div>
+      
+      <div class="calendar">
+        <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+        <!-- 日付が動的に挿入される -->
+      </div>
 
-      <div id="calendarSection" style="display: none;">
-        <div class="calendar-header">
-          <button class="arrow-button" id="prevMonth">&lt;</button>
-          <span id="monthDisplay">8月</span>
-          <button class="arrow-button" id="nextMonth">&gt;</button>
-          <button class="arrow-button" id="prevYear">&lt;</button>
-          <span id="yearDisplay">2025</span>
-          <button class="arrow-button" id="nextYear">&gt;</button>
-        </div>
-        
-        <div class="calendar">
-          <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
-          <!-- 日付が動的に挿入される -->
-        </div>
-
-        <div class="ok-button">
-          <button id="okButton" onclick="showConversation()">会話を見る</button>
-        </div>
+      <div class="ok-button">
+        <button id="okButton" onclick="showConversation()">会話を見る</button>
       </div>
     </div>
   </div>
 
   <div class="footer">
-    <img src="Home.png" alt="ホーム" />
-    <img src="List.png" alt="記録" />
-    <img src="File text.png" alt="カルテ" />
-    <img src="Settings.png" alt="設定" />
+    <img src="Home.png" alt="ホーム" onclick="navigateTo('demo_top.html')" />
+    <img src="List.png" alt="記録" onclick="navigateTo('demo_calendar.html')" />
+    <img src="File text.png" alt="カルテ" onclick="navigateTo('demo_record.html')" />
+    <img src="Settings.png" alt="設定" onclick="navigateTo('demo_settings.html')" />
   </div>
 
-  <script src="navigation.js"></script>
   <script>
-    const CLOUD_RUN_URL = 'https://loginservice-family-sucmscarza-an.a.run.app';
-    let currentClientId = null;
     let currentDate = new Date();
     let selectedDay = null;
-    let availableDays = [];
+    // デモ用の利用可能日（今月の1日、3日、5日、7日、10日、15日、20日、28日）
+    let availableDays = [1, 3, 5, 7, 10, 15, 20, 28];
 
-    // ページ読み込み時の初期化
     document.addEventListener('DOMContentLoaded', function() {
-      // ログイン状態をチェック
-      currentClientId = sessionStorage.getItem('userSerial');
-      
-      if (!currentClientId) {
-        showError('ログインが必要です。ログインページに戻ります。');
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 2000);
+      if (sessionStorage.getItem('demo_mode') !== 'true') {
+        alert('デモモードでアクセスしてください。');
+        window.location.href = 'demo_index.html';
         return;
       }
 
-      // イベントリスナーを設定
       setupEventListeners();
-      
-      // 初期表示
       updateCalendarDisplay();
-      loadAvailability();
     });
 
     function setupEventListeners() {
       document.getElementById('prevMonth').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
         updateCalendarDisplay();
-        loadAvailability();
         resetSelection();
       });
 
       document.getElementById('nextMonth').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() + 1);
         updateCalendarDisplay();
-        loadAvailability();
         resetSelection();
       });
 
       document.getElementById('prevYear').addEventListener('click', () => {
         currentDate.setFullYear(currentDate.getFullYear() - 1);
         updateCalendarDisplay();
-        loadAvailability();
         resetSelection();
       });
 
       document.getElementById('nextYear').addEventListener('click', () => {
         currentDate.setFullYear(currentDate.getFullYear() + 1);
         updateCalendarDisplay();
-        loadAvailability();
         resetSelection();
       });
     }
@@ -238,14 +331,12 @@
     function generateCalendar(year, month) {
       const calendar = document.querySelector('.calendar');
       
-      // 既存の日付セルを削除（曜日ヘッダーは残す）
       const dayCells = calendar.querySelectorAll('.calendar-day');
       dayCells.forEach(cell => cell.remove());
 
-      // 月の最初の日と最後の日を取得
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
-      const firstDayOfWeek = firstDay.getDay(); // 0=日曜日
+      const firstDayOfWeek = firstDay.getDay();
       const daysInMonth = lastDay.getDate();
 
       // 空のセルを追加（月の最初の日まで）
@@ -260,23 +351,32 @@
         dayCell.className = 'calendar-day';
         dayCell.textContent = day;
         dayCell.addEventListener('click', () => selectDay(day));
+        
+        // 2025年3月の場合のみ利用可能日を設定
+        if (year === 2025 && month === 2 && availableDays.includes(day)) {
+          dayCell.classList.add('available');
+        } else {
+          dayCell.classList.add('unavailable');
+        }
+        
         calendar.appendChild(dayCell);
       }
     }
 
     function selectDay(day) {
-      // 利用可能でない日は選択できない
-      if (!availableDays.includes(day)) {
+      // 2025年3月以外または利用可能でない日は選択できない
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      if (year !== 2025 || month !== 2 || !availableDays.includes(day)) {
         return;
       }
 
-      // 以前の選択を解除
       const previousSelected = document.querySelector('.calendar-day.selected');
       if (previousSelected) {
         previousSelected.classList.remove('selected');
       }
 
-      // 新しい選択を設定
       const dayCell = Array.from(document.querySelectorAll('.calendar-day'))
         .find(cell => cell.textContent == day);
       
@@ -305,52 +405,6 @@
       document.getElementById('okButton').classList.remove('visible');
     }
 
-    async function loadAvailability() {
-      try {
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const yearMonth = `${year}-${month}`;
-
-        const response = await fetch(`${CLOUD_RUN_URL}/conversation-availability/${currentClientId}/${yearMonth}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          availableDays = data.available_days || [];
-          updateCalendarAvailability();
-          showCalendar();
-        } else {
-          availableDays = [];
-          updateCalendarAvailability();
-          showCalendar();
-        }
-      } catch (error) {
-        console.error('Error loading availability:', error);
-        showError('可用性の確認中にエラーが発生しました。');
-      } finally {
-        hideLoading();
-      }
-    }
-
-    function updateCalendarAvailability() {
-      const dayCells = document.querySelectorAll('.calendar-day');
-      
-      dayCells.forEach(cell => {
-        const day = parseInt(cell.textContent);
-        
-        if (availableDays.includes(day)) {
-          cell.classList.remove('unavailable');
-        } else {
-          cell.classList.add('unavailable');
-        }
-      });
-    }
-
     function showConversation() {
       if (!selectedDay) return;
 
@@ -359,26 +413,16 @@
       const day = String(selectedDay).padStart(2, '0');
       const dateString = `${year}-${month}-${day}`;
 
-      // 会話表示ページに遷移（パラメータ付き）
-      sessionStorage.setItem('selectedConversationDate', dateString);
-      window.location.href = 'conversation_view.html';
+      sessionStorage.setItem('demo_selected_date', dateString);
+      window.location.href = 'demo_conversation.html';
     }
 
-    function showLoading() {
-      document.getElementById('loadingMessage').style.display = 'block';
-    }
-
-    function hideLoading() {
-      document.getElementById('loadingMessage').style.display = 'none';
-    }
-
-    function showError(message) {
-      document.getElementById('errorMessage').textContent = message;
-      document.getElementById('errorMessage').style.display = 'block';
-    }
-
-    function showCalendar() {
-      document.getElementById('calendarSection').style.display = 'block';
+    function navigateTo(page) {
+      if (sessionStorage.getItem('demo_mode') !== 'true') {
+        alert('デモモードでない場合は、この機能は利用できません。');
+        return;
+      }
+      window.location.href = page;
     }
   </script>
 </body>
